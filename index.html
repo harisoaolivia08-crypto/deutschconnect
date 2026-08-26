@@ -1,383 +1,55 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#111827">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#111827"
+  >
 
   <title>DeutschConnect 🇩🇪</title>
 
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="manifest"
+    href="manifest.json"
+  >
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
 
 <body>
 
-<header class="navbar">
-  <div class="logo">🇩🇪 DeutschConnect</div>
+  <!--
+    APP
+    Tout le contenu du site sera affiché ici
+    par app.js
+  -->
 
-  <nav>
-    <button onclick="showPage('home')">Accueil</button>
-    <button onclick="showPage('learn')">Apprendre</button>
-    <button onclick="showPage('quiz')">Quiz</button>
-    <button onclick="showPage('community')">Communauté</button>
-    <button onclick="showPage('profile')">Profil</button>
-  </nav>
+  <div id="app"></div>
 
-  <button class="login-btn" onclick="login()">
-    Connexion
-  </button>
-</header>
 
+  <!--
+    IMPORTANT :
+    data.js doit être chargé AVANT app.js
+  -->
 
-<main>
+  <script src="data.js"></script>
 
-<!-- ACCUEIL -->
-
-<section id="home" class="page active">
-
-  <div class="hero">
-
-    <div class="hero-text">
-
-      <span class="badge">
-        🇲🇬 Malagasy → 🇩🇪 Deutsch
-      </span>
-
-      <h1>
-        Apprends l'allemand.
-        <span>Chaque jour.</span>
-      </h1>
-
-      <p>
-        DeutschConnect t'aide à apprendre l'allemand
-        de A1 jusqu'à C2 avec des cours, exercices,
-        quiz et une communauté.
-      </p>
-
-      <button class="primary" onclick="showPage('learn')">
-        Commencer
-      </button>
-
-    </div>
-
-    <div class="dashboard-card">
-
-      <div class="card-header">
-        <b>Bonjour 👋</b>
-        <span>🇩🇪 A1</span>
-      </div>
-
-      <h2>Ta progression</h2>
-
-      <div class="progress">
-        <div id="homeProgress"></div>
-      </div>
-
-      <p>
-        <strong id="progressText">0%</strong>
-        terminé
-      </p>
-
-      <div class="lesson-preview">
-        📚
-        <div>
-          <b>Vocabulaire</b>
-          <small>10 mots à apprendre</small>
-        </div>
-      </div>
-
-      <div class="lesson-preview">
-        🧩
-        <div>
-          <b>Grammaire</b>
-          <small>Der, Die, Das</small>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-
-  <div class="stats">
-
-    <div>
-      <strong id="xpHome">0</strong>
-      <span>XP</span>
-    </div>
-
-    <div>
-      <strong id="streakHome">0</strong>
-      <span>🔥 Série</span>
-    </div>
-
-    <div>
-      <strong>6</strong>
-      <span>Niveaux</span>
-    </div>
-
-  </div>
-
-</section>
-
-
-<!-- APPRENDRE -->
-
-<section id="learn" class="page">
-
-  <div class="section-title">
-
-    <span>APPRENDRE</span>
-
-    <h2>
-      Choisis ton niveau
-    </h2>
-
-    <p>
-      De débutant à maîtrise complète.
-    </p>
-
-  </div>
-
-
-  <div class="levels">
-
-    <button onclick="selectLevel('A1')">A1</button>
-    <button onclick="selectLevel('A2')">A2</button>
-    <button onclick="selectLevel('B1')">B1</button>
-    <button onclick="selectLevel('B2')">B2</button>
-    <button onclick="selectLevel('C1')">C1</button>
-    <button onclick="selectLevel('C2')">C2</button>
-
-  </div>
-
-
-  <div id="levelContent" class="level-content">
-
-    <h2>🇩🇪 A1</h2>
-
-    <p>
-      Commence avec les bases de l'allemand.
-    </p>
-
-  </div>
-
-
-  <div class="features">
-
-    <article onclick="startVocabulary()">
-      <span>📖</span>
-      <h3>Vocabulaire</h3>
-      <p>
-        Apprends de nouveaux mots.
-      </p>
-    </article>
-
-
-    <article onclick="startGrammar()">
-      <span>🧩</span>
-      <h3>Grammaire</h3>
-      <p>
-        Comprends les règles allemandes.
-      </p>
-    </article>
-
-
-    <article onclick="startListening()">
-      <span>🎧</span>
-      <h3>Compréhension</h3>
-      <p>
-        Améliore ton écoute.
-      </p>
-    </article>
-
-
-    <article onclick="startSpeaking()">
-      <span>🗣️</span>
-      <h3>Expression</h3>
-      <p>
-        Entraîne-toi à parler.
-      </p>
-    </article>
-
-  </div>
-
-</section>
-
-
-<!-- QUIZ -->
-
-<section id="quiz" class="page">
-
-  <div class="section-title">
-
-    <span>QUIZ</span>
-
-    <h2>
-      Teste ton allemand
-    </h2>
-
-  </div>
-
-
-  <div class="quiz-card">
-
-    <div id="quizQuestion">
-
-      <h2>
-        Comment dit-on « Merci » en allemand ?
-      </h2>
-
-      <div class="answers">
-
-        <button onclick="answerQuiz(this, false)">
-          Bitte
-        </button>
-
-        <button onclick="answerQuiz(this, true)">
-          Danke
-        </button>
-
-        <button onclick="answerQuiz(this, false)">
-          Guten Morgen
-        </button>
-
-        <button onclick="answerQuiz(this, false)">
-          Tschüss
-        </button>
-
-      </div>
-
-    </div>
-
-    <div id="quizResult"></div>
-
-  </div>
-
-</section>
-
-
-<!-- COMMUNAUTÉ -->
-
-<section id="community" class="page">
-
-  <div class="section-title">
-
-    <span>COMMUNAUTÉ</span>
-
-    <h2>
-      Apprendre ensemble
-    </h2>
-
-    <p>
-      Une communauté pour pratiquer l'allemand
-      avec d'autres apprenants.
-    </p>
-
-  </div>
-
-
-  <div class="community-grid">
-
-    <article>
-      👥
-      <h3>Amis</h3>
-      <p>
-        Ajoute d'autres apprenants.
-      </p>
-    </article>
-
-    <article>
-      💬
-      <h3>Messages</h3>
-      <p>
-        Discute en allemand.
-      </p>
-    </article>
-
-    <article>
-      🏆
-      <h3>Classement</h3>
-      <p>
-        Compare tes XP.
-      </p>
-    </article>
-
-    <article>
-      🎯
-      <h3>Défis</h3>
-      <p>
-        Relève des défis quotidiens.
-      </p>
-    </article>
-
-  </div>
-
-</section>
-
-
-<!-- PROFIL -->
-
-<section id="profile" class="page">
-
-  <div class="profile-card">
-
-    <div class="avatar">
-      👤
-    </div>
-
-    <h2>
-      Mon profil
-    </h2>
-
-    <p>
-      Apprenant DeutschConnect
-    </p>
-
-    <div class="profile-stats">
-
-      <div>
-        <strong id="profileXP">0</strong>
-        <span>XP</span>
-      </div>
-
-      <div>
-        <strong id="profileStreak">0</strong>
-        <span>🔥 Série</span>
-      </div>
-
-      <div>
-        <strong id="profileLevel">A1</strong>
-        <span>Niveau</span>
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-</main>
-
-
-<footer>
-
-  <b>DeutschConnect 🇩🇪</b>
-
-  <p>
-    Malagasy 🇲🇬 · Français 🇫🇷 · English 🇬🇧 · Deutsch 🇩🇪
-  </p>
-
-  <small>
-    A1 → A2 → B1 → B2 → C1 → C2
-  </small>
-
-</footer>
-
-
-<script src="data.js"></script>
-<script src="app.js"></script>
+  <script src="app.js"></script>
 
 </body>
+
 </html>
