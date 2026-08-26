@@ -1,423 +1,955 @@
+/* ============================================================
+   DEUTSCHCONNECT 🇩🇪
+   DESIGN V1
+   ============================================================ */
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: Arial, sans-serif;
+  font-family:
+    Inter,
+    Arial,
+    Helvetica,
+    sans-serif;
+
   background: #f5f7fb;
   color: #172033;
   line-height: 1.6;
 }
 
-/* =========================
-   NAVIGATION
-========================= */
+/* ============================================================
+   NAVBAR
+   ============================================================ */
 
 .navbar {
-  height: 70px;
-  padding: 0 6%;
-  background: white;
+  width: 100%;
+  min-height: 70px;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #e5e7eb;
+
+  padding: 14px 5%;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e7eaf0;
+
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 1000;
 }
 
 .logo {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-nav {
+.nav-links {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
 }
 
-nav button,
-.login-btn {
+.nav-links button {
   border: none;
   background: transparent;
-  padding: 10px 14px;
-  cursor: pointer;
-  font-weight: 600;
-}
 
-.login-btn {
-  background: #111827;
-  color: white;
+  padding: 9px 13px;
+
   border-radius: 10px;
-}
 
-/* =========================
-   PAGES
-========================= */
+  font-size: 14px;
+  font-weight: 600;
 
-.page {
-  display: none;
-  max-width: 1200px;
-  margin: auto;
-  padding: 70px 6%;
-  min-height: 650px;
-}
+  color: #4b5563;
 
-.page.active {
-  display: block;
-}
-
-/* =========================
-   HERO
-========================= */
-
-.hero {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 70px;
-  align-items: center;
-  padding-top: 40px;
-}
-
-.badge,
-.eyebrow,
-.section-title > span {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-
-.hero h1 {
-  font-size: clamp(45px, 6vw, 75px);
-  line-height: 1.05;
-  margin: 20px 0;
-}
-
-.hero h1 span {
-  display: block;
-}
-
-.hero p {
-  font-size: 19px;
-  max-width: 650px;
-  color: #5b6475;
-  margin-bottom: 30px;
-}
-
-/* =========================
-   BUTTON
-========================= */
-
-.primary {
-  border: none;
-  background: #111827;
-  color: white;
-  padding: 15px 25px;
-  border-radius: 12px;
-  font-weight: 700;
   cursor: pointer;
-}
 
-.primary:hover {
-  opacity: 0.9;
-}
-
-/* =========================
-   DASHBOARD CARD
-========================= */
-
-.dashboard-card,
-.quiz-card,
-.profile-card {
-  background: white;
-  border-radius: 24px;
-  padding: 30px;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.08);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-}
-
-.dashboard-card h2 {
-  margin: 30px 0 15px;
-}
-
-/* =========================
-   PROGRESS
-========================= */
-
-.progress {
-  height: 10px;
-  background: #e5e7eb;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.progress div {
-  width: 0%;
-  height: 100%;
-  background: #111827;
-  transition: 0.5s;
-}
-
-/* =========================
-   LESSON
-========================= */
-
-.lesson-preview {
-  display: flex;
-  gap: 15px;
-  padding: 15px;
-  margin-top: 12px;
-  background: #f5f7fb;
-  border-radius: 12px;
-}
-
-.lesson-preview small {
-  display: block;
-  color: #6b7280;
-}
-
-/* =========================
-   STATISTIQUES
-========================= */
-
-.stats {
-  display: flex;
-  gap: 20px;
-  margin-top: 60px;
-}
-
-.stats div {
-  background: white;
-  padding: 20px 35px;
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-}
-
-.stats strong {
-  font-size: 30px;
-}
-
-/* =========================
-   TITRES
-========================= */
-
-.section-title {
-  margin-bottom: 35px;
-}
-
-.section-title h2 {
-  font-size: 42px;
-  margin: 10px 0;
-}
-
-/* =========================
-   NIVEAUX A1 → C2
-========================= */
-
-.levels {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
-  margin-bottom: 35px;
-}
-
-.levels button {
-  padding: 18px;
-  border: 2px solid #e5e7eb;
-  background: white;
-  border-radius: 12px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.levels button:hover {
-  background: #111827;
-  color: white;
-}
-
-.level-content {
-  background: white;
-  padding: 30px;
-  border-radius: 18px;
-  margin-bottom: 30px;
-}
-
-/* =========================
-   FEATURES
-========================= */
-
-.features,
-.community-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.features article,
-.community-grid article {
-  background: white;
-  padding: 25px;
-  border-radius: 18px;
-  cursor: pointer;
   transition: 0.2s;
 }
 
-.features article:hover,
-.community-grid article:hover {
-  transform: translateY(-4px);
+.nav-links button:hover {
+  background: #eef2ff;
+  color: #3730a3;
 }
 
-.features span {
-  font-size: 35px;
-}
+/* ============================================================
+   CONTAINER
+   ============================================================ */
 
-/* =========================
-   QUIZ
-========================= */
-
-.quiz-card {
-  max-width: 700px;
+.container {
+  width: min(1100px, 92%);
   margin: auto;
+  padding: 50px 0;
 }
 
-.answers {
-  display: grid;
-  gap: 12px;
-  margin-top: 25px;
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.hero {
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #eef2ff
+  );
+
+  border-radius: 26px;
+
+  padding: 60px 50px;
+
+  text-align: center;
+
+  box-shadow:
+    0 15px 40px rgba(15, 23, 42, 0.07);
 }
 
-.answers button {
-  padding: 15px;
-  background: #f5f7fb;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: left;
+.hero-badge,
+.a1-badge {
+  display: inline-block;
+
+  padding: 7px 14px;
+
+  border-radius: 30px;
+
+  background: #e8edff;
+
+  color: #3730a3;
+
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.answers button:hover {
-  background: #e5e7eb;
-}
-
-#quizResult {
+.hero h1 {
   margin-top: 20px;
+
+  font-size: clamp(35px, 6vw, 60px);
+
+  line-height: 1.1;
+
+  color: #111827;
+}
+
+.hero p {
+  max-width: 650px;
+
+  margin: 20px auto;
+
+  color: #5b6474;
+
+  font-size: 17px;
+}
+
+/* ============================================================
+   BUTTON
+   ============================================================ */
+
+.primary-btn {
+  border: none;
+
+  padding: 13px 23px;
+
+  border-radius: 12px;
+
+  background: #4f46e5;
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(79, 70, 229, 0.25);
+}
+
+/* ============================================================
+   PROGRESSION
+   ============================================================ */
+
+.progress-card {
+  background: white;
+
+  border-radius: 20px;
+
+  padding: 30px;
+
+  margin-top: 25px;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.progress-card h2 {
+  margin-bottom: 15px;
+}
+
+.progress-number {
+  font-size: 32px;
   font-weight: 800;
 }
 
-/* =========================
-   PROFIL
-========================= */
+.progress-bar {
+  width: 100%;
+  height: 10px;
 
-.profile-card {
-  max-width: 500px;
-  margin: auto;
+  margin: 12px 0;
+
+  background: #e5e7eb;
+
+  border-radius: 20px;
+
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+
+  background: #4f46e5;
+
+  border-radius: inherit;
+
+  transition: width 0.4s;
+}
+
+/* ============================================================
+   STATS
+   ============================================================ */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 18px;
+
+  margin-top: 25px;
+}
+
+.stat-card {
+  background: white;
+
+  border-radius: 18px;
+
+  padding: 25px;
+
   text-align: center;
+
+  box-shadow:
+    0 8px 25px rgba(15, 23, 42, 0.05);
 }
 
-.avatar {
-  font-size: 70px;
+.stat-card span {
+  display: block;
+
+  font-size: 25px;
+
+  margin-bottom: 7px;
 }
 
-.profile-stats {
+.stat-card strong {
+  display: block;
+
+  font-size: 25px;
+}
+
+.stat-card small {
+  color: #6b7280;
+}
+
+/* ============================================================
+   A1 HEADER
+   ============================================================ */
+
+.a1-header {
+  text-align: center;
+
+  margin-bottom: 35px;
+}
+
+.a1-header h1 {
+  font-size: 42px;
+
+  margin: 15px 0 8px;
+}
+
+.a1-header p {
+  color: #667085;
+}
+
+/* ============================================================
+   INHALT
+   ============================================================ */
+
+.inhalt-card {
+  background: white;
+
+  border-radius: 22px;
+
+  padding: 30px;
+
+  margin-bottom: 45px;
+
+  border: 1px solid #e7eaf0;
+
+  box-shadow:
+    0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.inhalt-card h2 {
+  font-size: 25px;
+
+  margin-bottom: 7px;
+}
+
+.inhalt-card > p {
+  color: #667085;
+
+  margin-bottom: 20px;
+}
+
+.inhalt-list {
+  list-style: none;
+
+  display: grid;
+
+  gap: 10px;
+}
+
+.inhalt-list li a {
   display: flex;
-  justify-content: space-around;
+  align-items: center;
+  gap: 14px;
+
+  text-decoration: none;
+
+  color: #172033;
+
+  padding: 14px 16px;
+
+  border-radius: 13px;
+
+  background: #f8f9fc;
+
+  transition: 0.2s;
+}
+
+.inhalt-list li a:hover {
+  background: #eef2ff;
+
+  transform: translateX(4px);
+}
+
+.inhalt-list li a span {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 35px;
+  height: 35px;
+
+  border-radius: 9px;
+
+  background: #4f46e5;
+
+  color: white;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.inhalt-list li a strong {
+  font-size: 15px;
+}
+
+.inhalt-list li a small {
+  color: #7b8494;
+
+  margin-left: auto;
+}
+
+/* ============================================================
+   LEÇONS
+   ============================================================ */
+
+.all-lessons {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 35px;
+}
+
+.full-lesson {
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 35px;
+
+  border: 1px solid #e6e9ef;
+
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.06);
+}
+
+.lesson-top {
+  display: flex;
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding-bottom: 25px;
+
+  border-bottom: 1px solid #edf0f4;
+}
+
+.lesson-number-big {
+  min-width: 65px;
+  height: 65px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 18px;
+
+  background: #4f46e5;
+
+  color: white;
+
+  font-size: 22px;
+
+  font-weight: 800;
+}
+
+.lesson-label {
+  font-size: 12px;
+
+  color: #4f46e5;
+
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+.lesson-top h2 {
+  font-size: 29px;
+
+  line-height: 1.2;
+
+  margin-top: 3px;
+}
+
+.lesson-top h3 {
+  color: #7b8494;
+
+  font-size: 15px;
+
+  font-weight: 500;
+}
+
+/* ============================================================
+   LERNZIEL
+   ============================================================ */
+
+.lernziel-box {
+  margin-top: 25px;
+
+  padding: 18px 20px;
+
+  background: #f5f7ff;
+
+  border-left: 4px solid #4f46e5;
+
+  border-radius: 10px;
+}
+
+.lernziel-box strong {
+  color: #3730a3;
+}
+
+.lernziel-box p {
+  margin-top: 5px;
+}
+
+/* ============================================================
+   BLOCS
+   ============================================================ */
+
+.lesson-block {
   margin-top: 30px;
 }
 
-.profile-stats div {
+.lesson-block > h3 {
+  font-size: 20px;
+
+  margin-bottom: 15px;
+}
+
+.lesson-text p {
+  margin-bottom: 12px;
+}
+
+.lesson-text {
+  color: #3f4858;
+}
+
+/* ============================================================
+   VOCABULAIRE
+   ============================================================ */
+
+.vocabulary-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 10px;
+}
+
+.word-card {
+  padding: 14px 16px;
+
+  background: #f8f9fc;
+
+  border-radius: 12px;
+
+  border: 1px solid #edf0f4;
+}
+
+.word-card strong {
+  display: block;
+
+  color: #172033;
+}
+
+.word-card span {
+  display: block;
+
+  color: #667085;
+
+  margin-top: 3px;
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.lesson-table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.lesson-table th,
+.lesson-table td {
+  text-align: left;
+
+  padding: 13px 15px;
+
+  border-bottom: 1px solid #e8ebf0;
+}
+
+.lesson-table th {
+  background: #f4f6fa;
+
+  font-size: 13px;
+}
+
+/* ============================================================
+   EXEMPLES
+   ============================================================ */
+
+.examples {
   display: flex;
+
   flex-direction: column;
+
+  gap: 10px;
 }
 
-.profile-stats strong {
-  font-size: 28px;
+.example-card {
+  padding: 16px 18px;
+
+  background: #f8f9fc;
+
+  border-radius: 12px;
+
+  border: 1px solid #edf0f4;
 }
 
-/* =========================
-   FOOTER
-========================= */
+.example-de {
+  font-weight: 700;
 
-footer {
+  color: #172033;
+}
+
+.example-fr {
+  margin-top: 5px;
+
+  color: #667085;
+}
+
+/* ============================================================
+   MERKE
+   ============================================================ */
+
+.merke {
+  padding: 20px;
+
+  background: #fff9e8;
+
+  border-radius: 14px;
+}
+
+.merke h3 {
+  margin-bottom: 10px;
+}
+
+.merke ul {
+  padding-left: 20px;
+}
+
+.merke li {
+  margin-bottom: 5px;
+}
+
+/* ============================================================
+   MINI TEST
+   ============================================================ */
+
+.lesson-test {
+  margin-top: 30px;
+
+  padding: 25px;
+
+  background: #f1f5ff;
+
+  border-radius: 16px;
+
   text-align: center;
-  padding: 40px 20px;
+}
+
+.lesson-test h3 {
+  font-size: 21px;
+
+  margin-bottom: 5px;
+}
+
+.lesson-test p {
+  color: #667085;
+
+  margin-bottom: 15px;
+}
+
+/* ============================================================
+   QUIZ
+   ============================================================ */
+
+.quiz-page {
+  max-width: 750px;
+}
+
+.quiz-container {
+  background: white;
+
+  padding: 35px;
+
+  border-radius: 22px;
+
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.06);
+}
+
+.quiz-container h1 {
+  margin: 30px 0;
+
+  font-size: 27px;
+}
+
+.quiz-progress {
+  font-weight: 700;
+
+  color: #4f46e5;
+}
+
+.quiz-options {
+  display: grid;
+
+  gap: 12px;
+}
+
+.quiz-option {
+  width: 100%;
+
+  padding: 15px;
+
+  border: 1px solid #dfe3ea;
+
+  background: white;
+
+  border-radius: 12px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  font-size: 15px;
+
+  transition: 0.2s;
+}
+
+.quiz-option:hover {
+  border-color: #4f46e5;
+
+  background: #f5f7ff;
+}
+
+.quiz-option.correct {
+  background: #dcfce7;
+
+  border-color: #22c55e;
+}
+
+.quiz-option.wrong {
+  background: #fee2e2;
+
+  border-color: #ef4444;
+}
+
+/* ============================================================
+   RESULTAT
+   ============================================================ */
+
+.result-card {
+  max-width: 600px;
+
+  margin: 50px auto;
+
+  padding: 45px;
+
+  background: white;
+
+  border-radius: 24px;
+
+  text-align: center;
+
+  box-shadow:
+    0 12px 35px rgba(15, 23, 42, 0.07);
+}
+
+.result-icon {
+  font-size: 55px;
+}
+
+.result-score {
+  font-size: 48px;
+
+  font-weight: 800;
+
+  margin: 15px 0;
+}
+
+/* ============================================================
+   FIN A1
+   ============================================================ */
+
+.a1-finish {
+  margin-top: 45px;
+
+  padding: 45px;
+
+  text-align: center;
+
+  background: linear-gradient(
+    135deg,
+    #eef2ff,
+    #ffffff
+  );
+
+  border-radius: 24px;
+}
+
+.a1-finish div {
+  font-size: 50px;
+}
+
+.a1-finish h2 {
+  margin: 10px 0;
+}
+
+/* ============================================================
+   ERREUR
+   ============================================================ */
+
+.error-card {
+  padding: 40px;
+
+  background: white;
+
+  border-radius: 20px;
+
+  text-align: center;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer {
+  margin-top: 50px;
+
+  padding: 35px 20px;
+
+  text-align: center;
+
   background: #111827;
+
   color: white;
 }
 
-/* =========================
-   TABLET / MOBILE
-========================= */
+.footer p {
+  color: #cbd5e1;
+
+  margin: 8px 0;
+}
+
+/* ============================================================
+   RESPONSIVE MOBILE
+   ============================================================ */
 
 @media (max-width: 800px) {
 
   .navbar {
-    height: auto;
-    padding: 15px;
-    flex-wrap: wrap;
+    flex-direction: column;
+
     gap: 12px;
+
+    padding: 15px;
   }
 
-  nav {
+  .nav-links {
     width: 100%;
-    overflow-x: auto;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
   }
 
-  nav button {
-    white-space: nowrap;
+  .nav-links button {
+    font-size: 13px;
+
+    padding: 7px 9px;
+  }
+
+  .container {
+    width: 94%;
+
+    padding: 30px 0;
   }
 
   .hero {
+    padding: 40px 22px;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  .stats-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
   }
 
-  .features,
-  .community-grid {
-    grid-template-columns: 1fr 1fr;
+  .full-lesson {
+    padding: 23px;
   }
 
-  .levels {
-    grid-template-columns: repeat(3, 1fr);
+  .lesson-top {
+    align-items: flex-start;
   }
 
-  .stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+  .lesson-number-big {
+    min-width: 52px;
+    height: 52px;
+
+    font-size: 18px;
+  }
+
+  .lesson-top h2 {
+    font-size: 23px;
+  }
+
+  .vocabulary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inhalt-list li a {
+    align-items: flex-start;
+  }
+
+  .inhalt-list li a small {
+    display: none;
   }
 
 }
 
-/* =========================
-   PETIT MOBILE
-========================= */
-
-@media (max-width: 500px) {
-
-  .features,
-  .community-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 480px) {
 
   .hero h1 {
-    font-size: 45px;
+    font-size: 32px;
   }
 
-  .page {
-    padding: 45px 5%;
+  .a1-header h1 {
+    font-size: 32px;
   }
 
-  .dashboard-card,
-  .quiz-card,
-  .profile-card {
-    padding: 22px;
+  .full-lesson {
+    padding: 18px;
+  }
+
+  .lesson-top {
+    gap: 12px;
+  }
+
+  .lesson-number-big {
+    min-width: 45px;
+    height: 45px;
+
+    border-radius: 12px;
+  }
+
+  .lesson-top h2 {
+    font-size: 21px;
+  }
+
+  .lesson-block > h3 {
+    font-size: 18px;
   }
 
 }
