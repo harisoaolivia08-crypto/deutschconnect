@@ -1,8 +1,8 @@
 // ============================================================
 // DEUTSCHCONNECT 🇩🇪
-// A1 - LERNZETTEL
-// Erklärungen: Leichtes Deutsch
-// Wortschatz: Deutsch → Français
+// A1 - COURS
+// Erklärung = Leichtes Deutsch
+// Wortschatz = Deutsch → Français
 // ============================================================
 
 window.A1_LESSONS = [
@@ -22,16 +22,16 @@ window.A1_LESSONS = [
       "Du kannst andere Menschen begrüßen und verabschieden.",
 
     erklaerung: `
-      Wenn wir eine Person treffen, begrüßen wir sie.
+Wenn wir eine Person treffen, begrüßen wir sie.
 
-      Am Morgen sagen wir „Guten Morgen“.
-      Am Tag sagen wir „Guten Tag“.
-      Am Abend sagen wir „Guten Abend“.
+Am Morgen sagen wir „Guten Morgen“.
+Am Tag sagen wir „Guten Tag“.
+Am Abend sagen wir „Guten Abend“.
 
-      Bei Freunden können wir „Hallo“ oder „Tschüss“ sagen.
+Bei Freunden können wir „Hallo“ oder „Tschüss“ sagen.
 
-      In einer formellen Situation können wir
-      „Auf Wiedersehen“ sagen.
+In einer formellen Situation können wir
+„Auf Wiedersehen“ sagen.
     `,
 
     wortschatz: [
@@ -114,17 +114,18 @@ window.A1_LESSONS = [
       "Du kannst dich einfach vorstellen.",
 
     erklaerung: `
-      Wenn wir eine neue Person treffen, können wir etwas
-      über uns sagen.
+Wenn wir eine neue Person treffen, können wir etwas
+über uns sagen.
 
-      Wir können unseren Namen, unser Alter,
-      unser Land und unseren Wohnort nennen.
+Wir können unseren Namen, unser Alter,
+unser Land und unseren Wohnort nennen.
 
-      Wir benutzen zum Beispiel:
-      „Ich heiße ...“
-      „Ich bin ... Jahre alt.“
-      „Ich komme aus ...“
-      „Ich wohne in ...“
+Wir benutzen zum Beispiel:
+
+„Ich heiße ...“
+„Ich bin ... Jahre alt.“
+„Ich komme aus ...“
+„Ich wohne in ...“
     `,
 
     wortschatz: [
@@ -220,12 +221,13 @@ window.A1_LESSONS = [
       "Du kannst die wichtigsten Personalpronomen benutzen.",
 
     erklaerung: `
-      Personalpronomen ersetzen Personen oder Dinge.
+Personalpronomen ersetzen Personen oder Dinge.
 
-      Wir benutzen:
-      ich, du, er, sie, es, wir, ihr, sie und Sie.
+Wir benutzen:
 
-      „Sie“ mit großem S ist die höfliche Form.
+ich, du, er, sie, es, wir, ihr, sie und Sie.
+
+„Sie“ mit großem S ist die höfliche Form.
     `,
 
     pronomen: [
@@ -302,10 +304,10 @@ window.A1_LESSONS = [
       "Du kannst das Verb „sein“ im Präsens benutzen.",
 
     erklaerung: `
-      „sein“ bedeutet auf Französisch „être“.
+„sein“ bedeutet auf Französisch „être“.
 
-      Das Verb ist unregelmäßig.
-      Deshalb muss man die Formen lernen.
+Das Verb ist unregelmäßig.
+Deshalb muss man die Formen lernen.
     `,
 
     konjugation: [
@@ -376,10 +378,10 @@ window.A1_LESSONS = [
       "Du kannst das Verb „haben“ im Präsens benutzen.",
 
     erklaerung: `
-      „haben“ bedeutet auf Französisch „avoir“.
+„haben“ bedeutet auf Französisch „avoir“.
 
-      Wir benutzen „haben“, wenn wir sagen,
-      dass wir etwas besitzen oder etwas haben.
+Wir benutzen „haben“, wenn wir sagen,
+dass wir etwas besitzen oder etwas haben.
     `,
 
     konjugation: [
@@ -396,8 +398,8 @@ window.A1_LESSONS = [
       { de: "das Auto", fr: "la voiture" },
       { de: "die Zeit", fr: "le temps" },
       { de: "das Geld", fr: "l'argent" },
-      { de: "einen Bruder", fr: "un frère" },
-      { de: "eine Schwester", fr: "une sœur" }
+      { de: "der Bruder", fr: "le frère" },
+      { de: "die Schwester", fr: "la sœur" }
     ],
 
     beispiele: [
@@ -459,16 +461,16 @@ window.A1_LESSONS = [
       "Du kannst der, die und das erkennen.",
 
     erklaerung: `
-      Im Deutschen haben Nomen ein grammatisches Geschlecht.
+Im Deutschen haben Nomen ein grammatisches Geschlecht.
 
-      Maskulin: der
-      Feminin: die
-      Neutrum: das
+Maskulin: der
+Feminin: die
+Neutrum: das
 
-      Im Plural benutzen wir normalerweise „die“.
+Im Plural benutzen wir normalerweise „die“.
 
-      Der Artikel gehört zum Nomen.
-      Deshalb ist es wichtig, das Nomen mit seinem Artikel zu lernen.
+Der Artikel gehört zum Nomen.
+Deshalb ist es wichtig, das Nomen mit seinem Artikel zu lernen.
     `,
 
     wortschatz: [
@@ -538,23 +540,23 @@ window.A1_LESSONS = [
       "Du kannst regelmäßige Verben im Präsens konjugieren.",
 
     erklaerung: `
-      Bei regelmäßigen Verben haben die Personen bestimmte Endungen.
+Bei regelmäßigen Verben haben die Personen bestimmte Endungen.
 
-      ich → -e
-      du → -st
-      er / sie / es → -t
-      wir → -en
-      ihr → -t
-      sie / Sie → -en
+ich → -e
+du → -st
+er / sie / es → -t
+wir → -en
+ihr → -t
+sie / Sie → -en
 
-      Beispiel: lernen
+Beispiel: lernen
 
-      ich lerne
-      du lernst
-      er lernt
-      wir lernen
-      ihr lernt
-      sie lernen
+ich lerne
+du lernst
+er lernt
+wir lernen
+ihr lernt
+sie lernen
     `,
 
     konjugation: [
@@ -634,12 +636,12 @@ window.A1_LESSONS = [
       "Du kannst wichtige Wörter aus dem Alltag verstehen.",
 
     erklaerung: `
-      Jeden Tag benutzen wir viele einfache Wörter.
+Jeden Tag benutzen wir viele einfache Wörter.
 
-      Wir lernen Wörter für die Wohnung,
-      die Familie, das Essen, die Schule und die Arbeit.
+Wir lernen Wörter für die Wohnung,
+die Familie, das Essen, die Schule und die Arbeit.
 
-      Lerne ein Nomen immer mit seinem Artikel.
+Lerne ein Nomen immer mit seinem Artikel.
     `,
 
     kategorien: [
@@ -760,22 +762,20 @@ window.A1_LESSONS = [
       "Du kannst einfache Fragen mit W-Fragewörtern stellen.",
 
     erklaerung: `
-      W-Fragen beginnen mit einem Fragewort.
+W-Fragen beginnen mit einem Fragewort.
 
-      Wir benutzen zum Beispiel:
+Wer? = eine Person
+Was? = eine Sache
+Wo? = ein Ort
+Wohin? = Richtung
+Woher? = Herkunft
+Wann? = Zeit
+Warum? = Grund
+Wie? = Art und Weise
+Wie viel? = Menge
 
-      Wer? = eine Person
-      Was? = eine Sache
-      Wo? = ein Ort
-      Wohin? = Richtung
-      Woher? = Herkunft
-      Wann? = Zeit
-      Warum? = Grund
-      Wie? = Art und Weise
-      Wie viel? = Menge
-
-      Das Verb steht bei einer normalen W-Frage
-      meistens auf Position 2.
+Das Verb steht bei einer normalen W-Frage
+meistens auf Position 2.
     `,
 
     wortschatz: [
@@ -852,23 +852,23 @@ window.A1_LESSONS = [
       "Du kannst einfache Sätze verneinen.",
 
     erklaerung: `
-      Im Deutschen gibt es zwei wichtige Formen der Negation:
+Im Deutschen gibt es zwei wichtige Formen der Negation:
 
-      „nicht“
-      und
-      „kein / keine“.
+„nicht“
+und
+„kein / keine“.
 
-      „nicht“ benutzen wir oft für Verben,
-      Adjektive oder bestimmte Satzteile.
+„nicht“ benutzen wir oft für Verben,
+Adjektive oder bestimmte Satzteile.
 
-      „kein / keine“ benutzen wir oft vor Nomen
-      mit unbestimmtem Artikel.
+„kein / keine“ benutzen wir oft vor Nomen
+mit unbestimmtem Artikel.
     `,
 
     wortschatz: [
       { de: "nicht", fr: "ne ... pas" },
-      { de: "kein", fr: "pas de / aucun (masculin / neutre)" },
-      { de: "keine", fr: "pas de / aucune (féminin / pluriel)" }
+      { de: "kein", fr: "pas de / aucun" },
+      { de: "keine", fr: "pas de / aucune" }
     ],
 
     beispiele: [
@@ -918,7 +918,7 @@ window.A1_LESSONS = [
 
 
   // ==========================================================
-  // A1.11 - PRÄPOSITIONEN + ALLTAG
+  // A1.11 - PRÄPOSITIONEN UND ALLTAG
   // ==========================================================
 
   {
@@ -932,25 +932,25 @@ window.A1_LESSONS = [
       "Du kannst wichtige Präpositionen und einfache Alltagssätze verstehen.",
 
     erklaerung: `
-      Präpositionen zeigen oft einen Ort,
-      eine Richtung oder eine Beziehung.
+Präpositionen zeigen oft einen Ort,
+eine Richtung oder eine Beziehung.
 
-      Wichtige Präpositionen auf A1 sind:
+Wichtige Präpositionen auf A1 sind:
 
-      in = dans
-      auf = sur
-      unter = sous
-      über = au-dessus de
-      neben = à côté de
-      zwischen = entre
-      vor = devant
-      hinter = derrière
-      mit = avec
-      ohne = sans
-      aus = de / en provenance de
-      nach = vers / à
+in = dans
+auf = sur
+unter = sous
+über = au-dessus de
+neben = à côté de
+zwischen = entre
+vor = devant
+hinter = derrière
+mit = avec
+ohne = sans
+aus = de / en provenance de
+nach = vers / à
 
-      Lerne die Präpositionen mit Beispielsätzen.
+Lerne die Präpositionen mit Beispielsätzen.
     `,
 
     wortschatz: [
@@ -1023,32 +1023,14 @@ window.A1_LESSONS = [
 
 
 // ============================================================
-// FUNKTIONEN FÜR DIE APP
-// ============================================================
-
-function getA1Lessons() {
-  return A1_LESSONS;
-}
-
-
-function getLessonById(id) {
-  return A1_LESSONS.find(function (lesson) {
-    return lesson.id === id;
-  });
-}
-
-
-function getLessonCount() {
-  return A1_LESSONS.length;
-}
-
-
-// ============================================================
-// TEST
+// VÉRIFICATION
 // ============================================================
 
 console.log(
-  "DeutschConnect A1 geladen:",
-  A1_LESSONS.length,
-  "Lernzettel"
+  "✅ DeutschConnect data.js chargé"
+);
+
+console.log(
+  "📚 Nombre de leçons A1 :",
+  window.A1_LESSONS.length
 );
