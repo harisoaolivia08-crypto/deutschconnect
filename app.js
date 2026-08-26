@@ -1,50 +1,68 @@
 // ============================================================
 // DEUTSCHCONNECT 🇩🇪
 // APP.JS
-// Compatible avec data.js → A1_LESSONS
+// A1 - 11 LEÇONS
+// Deutsch : Erklärung in leichtem Deutsch
+// Deutsch → Français : Wortschatz
 // ============================================================
 
 (function () {
+
   "use strict";
 
+
   // ==========================================================
-  // RÉCUPÉRER LES LEÇONS A1
+  // VÉRIFICATION DATA.JS
   // ==========================================================
 
   function getA1Lessons() {
+
     if (
       typeof A1_LESSONS !== "undefined" &&
       Array.isArray(A1_LESSONS)
     ) {
+
       return A1_LESSONS;
+
     }
 
-    console.error("❌ A1_LESSONS n'est pas trouvé dans data.js");
+    console.error(
+      "A1_LESSONS wurde nicht gefunden."
+    );
 
     return [];
+
   }
 
 
   // ==========================================================
-  // OUTIL : PROTECTION HTML
+  // HTML SÉCURISÉ
   // ==========================================================
 
-  function escapeHTML(text) {
-    if (text === undefined || text === null) {
+  function escapeHTML(value) {
+
+    if (
+      value === undefined ||
+      value === null
+    ) {
+
       return "";
+
     }
 
-    return String(text)
+    return String(value)
+
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
+
   }
 
 
   // ==========================================================
-  // FORMAT DU TEXTE
+  // TEXTE
   // ==========================================================
 
   function formatText(text) {
@@ -54,8 +72,11 @@
     }
 
     return escapeHTML(text)
+
       .trim()
+
       .split(/\n\s*\n/)
+
       .map(function (paragraph) {
 
         return `
@@ -65,21 +86,14 @@
         `;
 
       })
+
       .join("");
+
   }
 
 
   // ==========================================================
-  // APPLICATION
-  // ==========================================================
-
-  function getApp() {
-    return document.getElementById("app");
-  }
-
-
-  // ==========================================================
-  // PROGRESSION
+  // LOCAL STORAGE
   // ==========================================================
 
   function getCompleted() {
@@ -97,12 +111,14 @@
       return [];
 
     }
+
   }
 
 
   function saveCompleted(id) {
 
-    const completed = getCompleted();
+    const completed =
+      getCompleted();
 
     if (!completed.includes(id)) {
 
@@ -112,7 +128,9 @@
         "deutschconnect_completed",
         JSON.stringify(completed)
       );
+
     }
+
   }
 
 
@@ -123,6 +141,7 @@
         "deutschconnect_xp"
       ) || 0
     );
+
   }
 
 
@@ -130,8 +149,9 @@
 
     localStorage.setItem(
       "deutschconnect_xp",
-      String(getXP() + amount)
+      getXP() + amount
     );
+
   }
 
 
@@ -139,19 +159,21 @@
   // NAVIGATION
   // ==========================================================
 
-  function accueil() {
+  function showHome() {
 
     window.location.hash = "";
 
     renderHome();
+
   }
 
 
-  function apprendre() {
+  function showA1() {
 
     window.location.hash = "a1";
 
     renderA1();
+
   }
 
 
@@ -159,7 +181,7 @@
   // NAVBAR
   // ==========================================================
 
-  function navbar() {
+  function renderNavbar() {
 
     return `
 
@@ -167,41 +189,36 @@
 
         <div
           class="logo"
-          onclick="DeutschConnect.accueil()"
+          onclick="DeutschConnect.home()"
         >
           🇩🇪 DeutschConnect
         </div>
 
-
         <nav class="nav-links">
 
           <button
-            onclick="DeutschConnect.accueil()"
+            onclick="DeutschConnect.home()"
           >
             Accueil
           </button>
 
-
           <button
-            onclick="DeutschConnect.apprendre()"
+            onclick="DeutschConnect.a1()"
           >
             Apprendre
           </button>
 
-
           <button
-            onclick="DeutschConnect.quiz()"
+            onclick="DeutschConnect.a1()"
           >
             Quiz
           </button>
-
 
           <button
             onclick="DeutschConnect.community()"
           >
             Communauté
           </button>
-
 
           <button
             onclick="DeutschConnect.profile()"
@@ -211,9 +228,17 @@
 
         </nav>
 
+        <button
+          class="login-btn"
+          onclick="DeutschConnect.login()"
+        >
+          Connexion
+        </button>
+
       </header>
 
     `;
+
   }
 
 
@@ -223,44 +248,48 @@
 
   function renderHome() {
 
-    const app = getApp();
+    const app =
+      document.getElementById("app");
 
     if (!app) {
-
-      console.error(
-        "❌ <div id='app'> n'existe pas dans index.html"
-      );
-
       return;
     }
 
+    const lessons =
+      getA1Lessons();
 
-    const lessons = getA1Lessons();
-
-    const completed = getCompleted();
-
+    const completed =
+      getCompleted();
 
     const progress =
       lessons.length > 0
-        ? Math.min(
-            100,
-            Math.round(
-              (
-                completed.length /
-                lessons.length
-              ) * 100
-            )
+
+        ? Math.round(
+            (
+              completed.filter(function (id) {
+
+                return lessons.some(
+                  function (lesson) {
+
+                    return lesson.id === id;
+
+                  }
+                );
+
+              }).length
+              /
+              lessons.length
+            ) * 100
           )
+
         : 0;
 
 
     app.innerHTML = `
 
-      ${navbar()}
-
+      ${renderNavbar()}
 
       <main class="container">
-
 
         <section class="hero">
 
@@ -268,29 +297,26 @@
             🇫🇷 Français → 🇩🇪 Deutsch
           </div>
 
-
           <h1>
             Apprends l'allemand.
             <br>
             <span>Chaque jour.</span>
           </h1>
 
-
           <p>
             DeutschConnect t'aide à apprendre
-            l'allemand de A1 jusqu'à C2.
+            l'allemand de A1 jusqu'à C2
+            avec des cours simples et pratiques.
           </p>
-
 
           <button
             class="primary-btn"
-            onclick="DeutschConnect.apprendre()"
+            onclick="DeutschConnect.a1()"
           >
             Commencer
           </button>
 
         </section>
-
 
 
         <section class="progress-card">
@@ -299,11 +325,9 @@
             📊 Ta progression
           </h2>
 
-
           <div class="progress-number">
             ${progress}%
           </div>
-
 
           <div class="progress-bar">
 
@@ -313,7 +337,6 @@
             ></div>
 
           </div>
-
 
           <p>
             ${completed.length}
@@ -325,9 +348,7 @@
         </section>
 
 
-
         <section class="stats-grid">
-
 
           <div class="stat-card">
 
@@ -342,7 +363,6 @@
             </small>
 
           </div>
-
 
 
           <div class="stat-card">
@@ -360,7 +380,6 @@
           </div>
 
 
-
           <div class="stat-card">
 
             <span>🔥</span>
@@ -375,9 +394,7 @@
 
           </div>
 
-
         </section>
-
 
 
         <section class="learn-section">
@@ -385,7 +402,6 @@
           <h2>
             📖 Apprendre
           </h2>
-
 
           <p>
             Commence avec le niveau A1.
@@ -396,31 +412,26 @@
 
             <button
               class="level active"
-              onclick="DeutschConnect.apprendre()"
+              onclick="DeutschConnect.a1()"
             >
               A1
             </button>
-
 
             <button class="level locked">
               A2 🔒
             </button>
 
-
             <button class="level locked">
               B1 🔒
             </button>
-
 
             <button class="level locked">
               B2 🔒
             </button>
 
-
             <button class="level locked">
               C1 🔒
             </button>
-
 
             <button class="level locked">
               C2 🔒
@@ -430,73 +441,69 @@
 
         </section>
 
-
       </main>
 
 
-      ${footer()}
+      ${renderFooter()}
 
     `;
+
   }
 
 
   // ==========================================================
   // PAGE A1
-  // INHALT + LES 11 LEÇONS
+  // INHALT + 11 LEÇONS
   // ==========================================================
 
   function renderA1() {
 
-    const app = getApp();
+    const app =
+      document.getElementById("app");
 
     if (!app) {
       return;
     }
 
 
-    const lessons = getA1Lessons();
+    const lessons =
+      getA1Lessons().slice().sort(
+        function (a, b) {
 
+          return Number(a.number || 0)
+            -
+            Number(b.number || 0);
 
-    console.log(
-      "📚 Nombre de leçons A1 :",
-      lessons.length
-    );
+        }
+      );
 
 
     // --------------------------------------------------------
-    // SI AUCUNE LEÇON
+    // ERREUR
     // --------------------------------------------------------
 
     if (lessons.length === 0) {
 
       app.innerHTML = `
 
-        ${navbar()}
+        ${renderNavbar()}
 
         <main class="container">
 
           <section class="error-card">
 
             <h1>
-              ⚠️ Aucune leçon A1 trouvée
+              ⚠️ Keine A1-Lektionen
             </h1>
 
             <p>
-              Le fichier data.js ne contient pas
-              les données A1 ou il n'est pas chargé.
+              Die A1-Lektionen wurden nicht gefunden.
             </p>
-
 
             <p>
-              Vérifie que data.js est placé avant
-              app.js dans index.html.
+              Kontrolliere bitte die Datei
+              <strong>data.js</strong>.
             </p>
-
-
-            <pre>
-&lt;script src="data.js"&gt;&lt;/script&gt;
-&lt;script src="app.js"&gt;&lt;/script&gt;
-            </pre>
 
           </section>
 
@@ -505,24 +512,13 @@
       `;
 
       return;
+
     }
 
 
     // --------------------------------------------------------
-    // TRI DES LEÇONS
-    // --------------------------------------------------------
-
-    lessons.sort(function (a, b) {
-
-      return Number(a.number || 0)
-        - Number(b.number || 0);
-
-    });
-
-
-    // ========================================================
     // INHALT
-    // ========================================================
+    // --------------------------------------------------------
 
     let inhaltHTML = "";
 
@@ -536,11 +532,8 @@
           <a href="#lektion-${index + 1}">
 
             <span class="inhalt-number">
-
               ${String(index + 1).padStart(2, "0")}
-
             </span>
-
 
             <div>
 
@@ -548,9 +541,9 @@
                 ${escapeHTML(lesson.title)}
               </strong>
 
-
               ${
                 lesson.frenchTitle
+
                   ? `
                     <small>
                       ${escapeHTML(
@@ -558,6 +551,7 @@
                       )}
                     </small>
                   `
+
                   : ""
               }
 
@@ -572,34 +566,37 @@
     });
 
 
-    // ========================================================
-    // LES LEÇONS
-    // ========================================================
+    // --------------------------------------------------------
+    // LEÇONS
+    // --------------------------------------------------------
 
     let lessonsHTML = "";
 
 
     lessons.forEach(function (lesson, index) {
 
-      lessonsHTML += renderOneLesson(
-        lesson,
-        index
-      );
+      lessonsHTML +=
+        renderLesson(
+          lesson,
+          index
+        );
 
     });
 
 
-    // ========================================================
+    // --------------------------------------------------------
     // AFFICHAGE
-    // ========================================================
+    // --------------------------------------------------------
 
     app.innerHTML = `
 
-      ${navbar()}
+      ${renderNavbar()}
 
 
       <main class="container a1-page">
 
+
+        <!-- EN-TÊTE A1 -->
 
         <section class="a1-header">
 
@@ -607,16 +604,13 @@
             🇩🇪 NIVEAU A1
           </div>
 
-
           <h1>
             Deutsch lernen
           </h1>
 
-
           <p>
-            Lerne Deutsch Schritt für Schritt.
+            Einfache Erklärungen und wichtige Wörter.
           </p>
-
 
           <div class="language-info">
 
@@ -633,10 +627,7 @@
         </section>
 
 
-
-        <!-- ==================================================
-             INHALT
-             ================================================== -->
+        <!-- INHALT -->
 
         <section class="inhalt-card">
 
@@ -644,11 +635,9 @@
             📑 Inhalt
           </h2>
 
-
           <p>
-            Diese Themen lernst du im Niveau A1.
+            Das lernst du in A1:
           </p>
-
 
           <ol class="inhalt-list">
 
@@ -659,10 +648,7 @@
         </section>
 
 
-
-        <!-- ==================================================
-             ALLE LEKTIONEN
-             ================================================== -->
+        <!-- 11 LEÇONS -->
 
         <section class="all-lessons">
 
@@ -671,10 +657,7 @@
         </section>
 
 
-
-        <!-- ==================================================
-             A1 ENDE
-             ================================================== -->
+        <!-- FIN -->
 
         <section class="a1-finish">
 
@@ -682,16 +665,13 @@
             🎉
           </div>
 
-
           <h2>
             A1 geschafft!
           </h2>
 
-
           <p>
             Sehr gut! Du hast alle A1-Themen gelernt.
           </p>
-
 
           <p>
             Der nächste Schritt ist A2.
@@ -703,9 +683,10 @@
       </main>
 
 
-      ${footer()}
+      ${renderFooter()}
 
     `;
+
   }
 
 
@@ -713,7 +694,7 @@
   // UNE LEÇON
   // ==========================================================
 
-  function renderOneLesson(
+  function renderLesson(
     lesson,
     index
   ) {
@@ -735,32 +716,22 @@
         <div class="lesson-top">
 
           <div class="lesson-number-big">
-
             ${number}
-
           </div>
-
 
           <div>
 
             <div class="lesson-label">
-
               LEÇON ${index + 1}
-
             </div>
 
-
             <h2>
-
-              ${escapeHTML(
-                lesson.title
-              )}
-
+              ${escapeHTML(lesson.title)}
             </h2>
-
 
             ${
               lesson.frenchTitle
+
                 ? `
                   <h3>
                     ${escapeHTML(
@@ -768,6 +739,7 @@
                     )}
                   </h3>
                 `
+
                 : ""
             }
 
@@ -776,11 +748,11 @@
         </div>
 
 
-
         <!-- OBJECTIF -->
 
         ${
           lesson.lernziel
+
             ? `
 
               <div class="lernziel-box">
@@ -788,7 +760,6 @@
                 <strong>
                   🎯 Lernziel
                 </strong>
-
 
                 <p>
                   ${escapeHTML(
@@ -799,15 +770,16 @@
               </div>
 
             `
+
             : ""
         }
-
 
 
         <!-- ERKLÄRUNG -->
 
         ${
           lesson.erklaerung
+
             ? `
 
               <section class="lesson-block">
@@ -815,7 +787,6 @@
                 <h3>
                   📖 Erklärung
                 </h3>
-
 
                 <div class="lesson-text">
 
@@ -828,91 +799,99 @@
               </section>
 
             `
+
             : ""
         }
-
 
 
         <!-- WORTSCHATZ -->
 
         ${
           lesson.wortschatz
+
             ? renderVocabulary(
                 lesson.wortschatz
               )
+
             : ""
         }
-
 
 
         <!-- KATEGORIEN -->
 
         ${
           lesson.kategorien
+
             ? renderCategories(
                 lesson.kategorien
               )
+
             : ""
         }
-
 
 
         <!-- PRONOMEN -->
 
         ${
           lesson.pronomen
+
             ? renderPronomen(
                 lesson.pronomen
               )
+
             : ""
         }
-
 
 
         <!-- KONJUGATION -->
 
         ${
           lesson.konjugation
+
             ? renderKonjugation(
                 lesson.konjugation
               )
+
             : ""
         }
-
 
 
         <!-- BEISPIELE -->
 
         ${
           lesson.beispiele
+
             ? renderExamples(
                 lesson.beispiele
               )
+
             : ""
         }
-
 
 
         <!-- MERKE -->
 
         ${
           lesson.merke
+
             ? renderMerke(
                 lesson.merke
               )
+
             : ""
         }
 
 
-
-        <!-- MINI TEST -->
+        <!-- TEST -->
 
         ${
           lesson.miniTest
+
             ? renderMiniTestInfo(
                 lesson.miniTest,
                 lesson.id
               )
+
             : ""
         }
 
@@ -920,6 +899,7 @@
       </article>
 
     `;
+
   }
 
 
@@ -942,44 +922,44 @@
           📚 Wortschatz
         </h3>
 
-
         <div class="vocabulary-grid">
 
-          ${words.map(function (word) {
+          ${
+            words.map(function (word) {
 
-            return `
+              return `
 
-              <div class="word-card">
+                <div class="word-card">
 
-                <strong>
-                  ${escapeHTML(
-                    word.de ||
-                    word.german ||
-                    ""
-                  )}
-                </strong>
+                  <strong>
+                    ${escapeHTML(
+                      word.de ||
+                      word.german ||
+                      ""
+                    )}
+                  </strong>
 
+                  <span>
+                    ${escapeHTML(
+                      word.fr ||
+                      word.french ||
+                      ""
+                    )}
+                  </span>
 
-                <span>
-                  🇫🇷
-                  ${escapeHTML(
-                    word.fr ||
-                    word.french ||
-                    ""
-                  )}
-                </span>
+                </div>
 
-              </div>
+              `;
 
-            `;
-
-          }).join("")}
+            }).join("")
+          }
 
         </div>
 
       </section>
 
     `;
+
   }
 
 
@@ -1003,70 +983,77 @@
         </h3>
 
 
-        ${categories.map(function (category) {
+        ${
+          categories.map(
+            function (category) {
 
-          return `
+              return `
 
-            <div class="category-card">
+                <div class="category-card">
 
-              <h4>
-                ${escapeHTML(
-                  category.name || ""
-                )}
-              </h4>
-
-
-              ${
-                Array.isArray(
-                  category.words
-                )
-                  ? `
-
-                    <div class="vocabulary-grid">
-
-                      ${category.words
-                        .map(function (word) {
-
-                          return `
-
-                            <div class="word-card">
-
-                              <strong>
-                                ${escapeHTML(
-                                  word.de || ""
-                                )}
-                              </strong>
+                  <h4>
+                    ${escapeHTML(
+                      category.name || ""
+                    )}
+                  </h4>
 
 
-                              <span>
-                                🇫🇷
-                                ${escapeHTML(
-                                  word.fr || ""
-                                )}
-                              </span>
+                  ${
+                    Array.isArray(
+                      category.words
+                    )
 
-                            </div>
+                      ? `
 
-                          `;
+                        <div class="vocabulary-grid">
 
-                        })
-                        .join("")}
+                          ${
+                            category.words.map(
+                              function (word) {
 
-                    </div>
+                                return `
 
-                  `
-                  : ""
-              }
+                                  <div class="word-card">
 
-            </div>
+                                    <strong>
+                                      ${escapeHTML(
+                                        word.de || ""
+                                      )}
+                                    </strong>
 
-          `;
+                                    <span>
+                                      ${escapeHTML(
+                                        word.fr || ""
+                                      )}
+                                    </span>
 
-        }).join("")}
+                                  </div>
+
+                                `;
+
+                              }
+                            ).join("")
+                          }
+
+                        </div>
+
+                      `
+
+                      : ""
+                  }
+
+                </div>
+
+              `;
+
+            }
+          ).join("")
+        }
 
       </section>
 
     `;
+
   }
 
 
@@ -1088,7 +1075,6 @@
         <h3>
           👤 Personalpronomen
         </h3>
-
 
         <div class="table-wrapper">
 
@@ -1113,34 +1099,35 @@
 
             <tbody>
 
-              ${rows.map(function (row) {
+              ${
+                rows.map(function (row) {
 
-                return `
+                  return `
 
-                  <tr>
+                    <tr>
 
-                    <td>
-                      <strong>
+                      <td>
+                        <strong>
+                          ${escapeHTML(
+                            row.person ||
+                            row.de ||
+                            ""
+                          )}
+                        </strong>
+                      </td>
+
+                      <td>
                         ${escapeHTML(
-                          row.person ||
-                          row.de ||
-                          ""
+                          row.fr || ""
                         )}
-                      </strong>
-                    </td>
+                      </td>
 
+                    </tr>
 
-                    <td>
-                      ${escapeHTML(
-                        row.fr || ""
-                      )}
-                    </td>
+                  `;
 
-                  </tr>
-
-                `;
-
-              }).join("")}
+                }).join("")
+              }
 
             </tbody>
 
@@ -1151,6 +1138,7 @@
       </section>
 
     `;
+
   }
 
 
@@ -1201,41 +1189,41 @@
 
             <tbody>
 
-              ${rows.map(function (row) {
+              ${
+                rows.map(function (row) {
 
-                return `
+                  return `
 
-                  <tr>
+                    <tr>
 
-                    <td>
-                      ${escapeHTML(
-                        row.person || ""
-                      )}
-                    </td>
-
-
-                    <td>
-                      <strong>
+                      <td>
                         ${escapeHTML(
-                          row.form ||
-                          row.de ||
-                          ""
+                          row.person || ""
                         )}
-                      </strong>
-                    </td>
+                      </td>
 
+                      <td>
+                        <strong>
+                          ${escapeHTML(
+                            row.form ||
+                            row.de ||
+                            ""
+                          )}
+                        </strong>
+                      </td>
 
-                    <td>
-                      ${escapeHTML(
-                        row.fr || ""
-                      )}
-                    </td>
+                      <td>
+                        ${escapeHTML(
+                          row.fr || ""
+                        )}
+                      </td>
 
-                  </tr>
+                    </tr>
 
-                `;
+                  `;
 
-              }).join("")}
+                }).join("")
+              }
 
             </tbody>
 
@@ -1246,6 +1234,7 @@
       </section>
 
     `;
+
   }
 
 
@@ -1271,44 +1260,47 @@
 
         <div class="examples">
 
-          ${examples.map(function (example) {
+          ${
+            examples.map(function (example) {
 
-            return `
+              return `
 
-              <div class="example-card">
+                <div class="example-card">
 
-                <div class="example-de">
+                  <div class="example-de">
 
-                  🇩🇪
+                    🇩🇪
 
-                  ${escapeHTML(
-                    example.de || ""
-                  )}
+                    ${escapeHTML(
+                      example.de || ""
+                    )}
+
+                  </div>
+
+
+                  <div class="example-fr">
+
+                    🇫🇷
+
+                    ${escapeHTML(
+                      example.fr || ""
+                    )}
+
+                  </div>
 
                 </div>
 
+              `;
 
-                <div class="example-fr">
-
-                  🇫🇷
-
-                  ${escapeHTML(
-                    example.fr || ""
-                  )}
-
-                </div>
-
-              </div>
-
-            `;
-
-          }).join("")}
+            }).join("")
+          }
 
         </div>
 
       </section>
 
     `;
+
   }
 
 
@@ -1334,28 +1326,31 @@
 
         <ul>
 
-          ${items.map(function (item) {
+          ${
+            items.map(function (item) {
 
-            return `
+              return `
 
-              <li>
-                ${escapeHTML(item)}
-              </li>
+                <li>
+                  ${escapeHTML(item)}
+                </li>
 
-            `;
+              `;
 
-          }).join("")}
+            }).join("")
+          }
 
         </ul>
 
       </section>
 
     `;
+
   }
 
 
   // ==========================================================
-  // MINI TEST : BOUTON
+  // MINI TEST
   // ==========================================================
 
   function renderMiniTestInfo(
@@ -1367,7 +1362,9 @@
       !Array.isArray(questions) ||
       questions.length === 0
     ) {
+
       return "";
+
     }
 
 
@@ -1379,16 +1376,16 @@
           📝 Mini-Test
         </h3>
 
-
         <p>
           Teste dein Wissen über diese Lektion.
         </p>
 
-
         <button
           class="primary-btn"
           onclick="
-            DeutschConnect.startTest('${lessonId}')
+            DeutschConnect.startTest(
+              '${lessonId}'
+            )
           "
         >
           Mini-Test starten
@@ -1397,11 +1394,12 @@
       </section>
 
     `;
+
   }
 
 
   // ==========================================================
-  // MINI TEST
+  // QUIZ
   // ==========================================================
 
   let testLesson = null;
@@ -1420,11 +1418,13 @@
 
 
     testLesson =
-      lessons.find(function (lesson) {
+      lessons.find(
+        function (lesson) {
 
-        return lesson.id === lessonId;
+          return lesson.id === lessonId;
 
-      });
+        }
+      );
 
 
     if (
@@ -1435,43 +1435,41 @@
     ) {
 
       alert(
-        "Ce mini-test n'est pas disponible."
+        "Dieser Mini-Test ist nicht verfügbar."
       );
 
       return;
+
     }
 
 
     testQuestions =
       testLesson.miniTest;
 
-
     testIndex = 0;
 
     testScore = 0;
 
-
     showQuestion();
+
   }
 
 
-  // ==========================================================
-  // QUESTION
-  // ==========================================================
-
   function showQuestion() {
 
-    const app = getApp();
+    const app =
+      document.getElementById("app");
 
 
     if (
-      testIndex >=
-      testQuestions.length
+      !app ||
+      testIndex >= testQuestions.length
     ) {
 
       finishTest();
 
       return;
+
     }
 
 
@@ -1479,15 +1477,24 @@
       testQuestions[testIndex];
 
 
+    const progress =
+      Math.round(
+        (
+          testIndex
+          /
+          testQuestions.length
+        ) * 100
+      );
+
+
     app.innerHTML = `
 
-      ${navbar()}
+      ${renderNavbar()}
 
 
       <main class="container quiz-page">
 
         <section class="quiz-container">
-
 
           <div class="quiz-progress">
 
@@ -1503,37 +1510,28 @@
 
             <div
               class="progress-fill"
-              style="
-                width:${
-                  (
-                    testIndex /
-                    testQuestions.length
-                  ) * 100
-                }%
-              "
+              style="width:${progress}%"
             ></div>
 
           </div>
 
 
           <h1>
-
             ${escapeHTML(
               question.question || ""
             )}
-
           </h1>
 
 
           <div class="quiz-options">
 
-
             ${
               Array.isArray(
                 question.options
               )
-                ? question.options
-                    .map(function (
+
+                ? question.options.map(
+                    function (
                       option,
                       index
                     ) {
@@ -1543,38 +1541,32 @@
                         <button
                           class="quiz-option"
                           onclick="
-                            DeutschConnect.answer(${index})
+                            DeutschConnect.answer(
+                              ${index}
+                            )
                           "
                         >
-
-                          ${escapeHTML(
-                            option
-                          )}
-
+                          ${escapeHTML(option)}
                         </button>
 
                       `;
 
-                    })
-                    .join("")
+                    }
+                  ).join("")
+
                 : ""
             }
 
-
           </div>
-
 
         </section>
 
       </main>
 
     `;
+
   }
 
-
-  // ==========================================================
-  // RÉPONSE
-  // ==========================================================
 
   function answer(answerIndex) {
 
@@ -1588,19 +1580,18 @@
       );
 
 
-    buttons.forEach(function (button) {
+    buttons.forEach(
+      function (button) {
 
-      button.disabled = true;
+        button.disabled = true;
 
-    });
-
-
-    const correct =
-      Number(question.correct);
+      }
+    );
 
 
     if (
-      answerIndex === correct
+      answerIndex ===
+      Number(question.correct)
     ) {
 
       testScore++;
@@ -1629,10 +1620,12 @@
       }
 
 
-      if (buttons[correct]) {
+      if (
+        buttons[question.correct]
+      ) {
 
         buttons[
-          correct
+          question.correct
         ].classList.add(
           "correct"
         );
@@ -1642,18 +1635,22 @@
     }
 
 
-    setTimeout(function () {
+    setTimeout(
+      function () {
 
-      testIndex++;
+        testIndex++;
 
-      showQuestion();
+        showQuestion();
 
-    }, 800);
+      },
+      800
+    );
+
   }
 
 
   // ==========================================================
-  // FIN DU TEST
+  // FIN TEST
   // ==========================================================
 
   function finishTest() {
@@ -1663,12 +1660,17 @@
 
 
     const percent =
-      Math.round(
-        (
-          testScore /
-          total
-        ) * 100
-      );
+      total > 0
+
+        ? Math.round(
+            (
+              testScore
+              /
+              total
+            ) * 100
+          )
+
+        : 0;
 
 
     if (percent >= 60) {
@@ -1677,24 +1679,23 @@
         testLesson.id
       );
 
-
       addXP(10);
 
     }
 
 
-    const app = getApp();
+    const app =
+      document.getElementById("app");
 
 
     app.innerHTML = `
 
-      ${navbar()}
+      ${renderNavbar()}
 
 
       <main class="container">
 
         <section class="result-card">
-
 
           <div class="result-icon">
 
@@ -1734,28 +1735,24 @@
 
           ${
             percent >= 60
-              ? `
 
+              ? `
                 <p>
                   ⭐ +10 XP
                 </p>
-
               `
-              : `
 
+              : `
                 <p>
                   Versuche den Test noch einmal.
                 </p>
-
               `
           }
 
 
           <button
             class="primary-btn"
-            onclick="
-              DeutschConnect.apprendre()
-            "
+            onclick="DeutschConnect.a1()"
           >
             Zurück zu A1
           </button>
@@ -1766,39 +1763,9 @@
       </main>
 
 
-      ${footer()}
+      ${renderFooter()}
 
     `;
-  }
-
-
-  // ==========================================================
-  // PAGES TEMPORAIRES
-  // ==========================================================
-
-  function quiz() {
-
-    alert(
-      "📝 Le Quiz général sera bientôt disponible."
-    );
-
-  }
-
-
-  function community() {
-
-    alert(
-      "👥 La Communauté sera bientôt disponible."
-    );
-
-  }
-
-
-  function profile() {
-
-    alert(
-      "👤 Le Profil sera bientôt disponible."
-    );
 
   }
 
@@ -1807,7 +1774,7 @@
   // FOOTER
   // ==========================================================
 
-  function footer() {
+  function renderFooter() {
 
     return `
 
@@ -1817,11 +1784,9 @@
           DeutschConnect 🇩🇪
         </strong>
 
-
         <p>
           Français 🇫🇷 · Deutsch 🇩🇪
         </p>
-
 
         <p>
           A1 → A2 → B1 → B2 → C1 → C2
@@ -1830,6 +1795,38 @@
       </footer>
 
     `;
+
+  }
+
+
+  // ==========================================================
+  // PAGES TEMPORAIRES
+  // ==========================================================
+
+  function community() {
+
+    alert(
+      "La communauté sera disponible bientôt."
+    );
+
+  }
+
+
+  function profile() {
+
+    alert(
+      "Le profil sera disponible bientôt."
+    );
+
+  }
+
+
+  function login() {
+
+    alert(
+      "La connexion sera disponible bientôt."
+    );
+
   }
 
 
@@ -1842,8 +1839,7 @@
     const hash =
       window.location.hash
         .replace("#", "")
-        .trim()
-        .toLowerCase();
+        .trim();
 
 
     if (
@@ -1863,24 +1859,24 @@
 
 
   // ==========================================================
-  // FONCTIONS PUBLIQUES
+  // API PUBLIQUE
   // ==========================================================
 
   window.DeutschConnect = {
 
-    accueil: accueil,
+    home: showHome,
 
-    apprendre: apprendre,
+    a1: showA1,
 
-    quiz: quiz,
+    startTest: startTest,
+
+    answer: answer,
 
     community: community,
 
     profile: profile,
 
-    startTest: startTest,
-
-    answer: answer
+    login: login
 
   };
 
@@ -1898,6 +1894,18 @@
   document.addEventListener(
     "DOMContentLoaded",
     router
+  );
+
+
+  // Vérification dans la console
+
+  console.log(
+    "🇩🇪 DeutschConnect chargé."
+  );
+
+  console.log(
+    "📚 Nombre de leçons A1 :",
+    getA1Lessons().length
   );
 
 
