@@ -1,6 +1,7 @@
 // ============================================================
 // DEUTSCHCONNECT 🇩🇪
-// APP.JS - A1 Lernsystem
+// APP.JS - A1
+// Compatible avec data.js
 // ============================================================
 
 (function () {
@@ -12,667 +13,988 @@
 
   let currentLesson = null;
   let currentQuestion = 0;
-  let currentScore = 0;
-  let answered = false;
+  let score = 0;
 
   // ----------------------------------------------------------
-  // INITIALISATION
+  // UTILITAIRES
   // ----------------------------------------------------------
 
-  document.addEventListener("DOMContentLoaded", function () {
-    initializeApp();
-  });
+  function getApp() {
+    return document.getElementById("app");
+  }
 
-  function initializeApp() {
-    setupNavigation();
-    setupLevelButtons();
-    showHome();
+  function escapeHTML(text) {
+    if (text === undefined || text === null) return "";
+
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function getProgress() {
+    const completed =
+      JSON.parse(localStorage.getItem("deutschconnect_completed") || "[]");
+
+    return completed;
+  }
+
+  function saveCompletedLesson(id) {
+    const completed = getProgress();
+
+    if (!completed.includes(id)) {
+      completed.push(id);
+      localStorage.setItem(
+        "deutschconnect_completed",
+        JSON.stringify(completed)
+      );
+    }
+  }
+
+  function getXP() {
+    return Number(localStorage.getItem("deutschconnect_xp") || 0);
+  }
+
+  function addXP(amount) {
+    const xp = getXP() + amount;
+    localStorage.setItem("deutschconnect_xp", xp);
+  }
+
+  function getTestsCompleted() {
+    return Number(
+      localStorage.getItem("deutschconnect_tests") || 0
+    );
+  }
+
+  function addTestCompleted() {
+    const tests = getTestsCompleted() + 1;
+
+    localStorage.setItem(
+      "deutschconnect_tests",
+      tests
+    );
   }
 
   // ----------------------------------------------------------
   // NAVIGATION
   // ----------------------------------------------------------
 
-  function setupNavigation() {
-    const links = document.querySelectorAll("nav a, .nav-link");
+  function goHome() {
+    window.location.hash = "";
+    renderHome();
+  }
 
-    links.forEach(function (link) {
-      link.addEventListener("click", function (event) {
-        const target = link.getAttribute("href");
+  function goLearn() {
+    window.location.hash = "learn";
+    renderLearn();
+  }
 
-        if (!target || !target.startsWith("#")) {
-          return;
-        }
+  function goA1() {
+    window.location.hash = "a1";
+    renderA1();
+  }
 
-        event.preventDefault();
+  function goLesson(id) {
+    window.location.hash = "lesson/" + id;
+    renderLesson(id);
+  }
 
-        const page = target.substring(1);
-
-        if (page === "accueil" || page === "home") {
-          showHome();
-        }
-
-        if (page === "apprendre") {
-          showLearn();
-        }
-
-        if (page === "quiz") {
-          showQuiz();
-        }
-
-        if (page === "communaute") {
-          showCommunity();
-        }
-
-        if (page === "profil") {
-          showProfile();
-        }
-      });
-    });
+  function goQuiz() {
+    window.location.hash = "quiz";
+    renderQuizStart();
   }
 
   // ----------------------------------------------------------
-  // BOUTONS DE NIVEAU
+  // NAVBAR
   // ----------------------------------------------------------
 
-  function setupLevelButtons() {
-    document.addEventListener("click", function (event) {
-      const button = event.target.closest("[data-level]");
+  function renderNavbar() {
+    return `
+      <nav class="navbar">
 
-      if (!button) {
-        return;
-      }
+        <div class="logo" onclick="DeutschConnect.goHome()">
+          🇩🇪 DeutschConnect
+        </div>
 
-      const level = button.dataset.level;
+        <div class="nav-links">
+          <button onclick="DeutschConnect.goHome()">
+            Accueil
+          </button>
 
-      if (level === "A1") {
-        showLearn();
-      } else {
-        showComingSoon(level);
-      }
-    });
-  }
+          <button onclick="DeutschConnect.goLearn()">
+            Apprendre
+          </button>
 
-  // ----------------------------------------------------------
-  // OUTIL : TROUVER LA ZONE PRINCIPALE
-  // ----------------------------------------------------------
+          <button onclick="DeutschConnect.goQuiz()">
+            Quiz
+          </button>
 
-  function getMainContainer() {
-    let container =
-      document.querySelector("main") ||
-      document.querySelector("#app") ||
-      document.querySelector(".app") ||
-      document.querySelector(".container");
+          <button onclick="alert('Communauté : bientôt disponible !')">
+            Communauté
+          </button>
 
-    if (!container) {
-      container = document.createElement("main");
-      document.body.appendChild(container);
-    }
+          <button onclick="alert('Profil : bientôt disponible !')">
+            Profil
+          </button>
+        </div>
 
-    return container;
+      </nav>
+    `;
   }
 
   // ----------------------------------------------------------
   // ACCUEIL
   // ----------------------------------------------------------
 
-  function showHome() {
-    const main = getMainContainer();
+  function renderHome() {
+    const app = getApp();
 
-    main.innerHTML = `
-      <section class="hero">
-        <p class="badge">🇲🇬 Français → 🇩🇪 Deutsch</p>
+    if (!app) {
+      console.error("Element #app introuvable.");
+      return;
+    }
 
-        <h1>Apprends l'allemand. Chaque jour.</h1>
+    const lessons = getA1Lessons();
+    const completed = getProgress();
 
-        <p>
-          DeutschConnect t'aide à apprendre l'allemand
-          de A1 jusqu'à C2.
-        </p>
+    const progress =
+      lessons.length > 0
+        ? Math.round((completed.length / lessons.length) * 100)
+        : 0;
 
-        <button class="primary-btn" id="startLearning">
-          Commencer
-        </button>
-      </section>
+    app.innerHTML = `
 
-      <section class="progress-section">
-        <h2>Ta progression</h2>
+      ${renderNavbar()}
 
-        <div class="progress-card">
-          <strong id="homeProgress">0%</strong>
-          <span>terminé</span>
-        </div>
+      <main class="container">
 
-        <div class="stats-grid">
+        <section class="hero">
+
+          <div class="hero-badge">
+            🇫🇷 Français → 🇩🇪 Deutsch
+          </div>
+
+          <h1>
+            Apprends l'allemand.<br>
+            Chaque jour.
+          </h1>
+
+          <p>
+            DeutschConnect t'aide à apprendre l'allemand
+            de A1 jusqu'à C2.
+          </p>
+
+          <button
+            class="primary-btn"
+            onclick="DeutschConnect.goLearn()"
+          >
+            Commencer
+          </button>
+
+        </section>
+
+
+        <section class="progress-card">
+
+          <h2>📊 Ta progression</h2>
+
+          <div class="progress-number">
+            ${progress}%
+          </div>
+
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              style="width:${progress}%"
+            ></div>
+          </div>
+
+          <p>
+            ${completed.length} / ${lessons.length}
+            Lernzettel terminés
+          </p>
+
+        </section>
+
+
+        <section class="stats-grid">
+
           <div class="stat-card">
             <span>📚</span>
-            <strong>11</strong>
+            <strong>${lessons.length}</strong>
             <small>Lernzettel A1</small>
           </div>
 
           <div class="stat-card">
             <span>📝</span>
-            <strong>0</strong>
+            <strong>${getTestsCompleted()}</strong>
             <small>Tests terminés</small>
           </div>
 
           <div class="stat-card">
             <span>⭐</span>
-            <strong id="homeXP">0</strong>
+            <strong>${getXP()}</strong>
             <small>XP</small>
           </div>
 
           <div class="stat-card">
             <span>🔥</span>
-            <strong id="homeStreak">0</strong>
+            <strong>0</strong>
             <small>Série</small>
           </div>
-        </div>
-      </section>
 
-      <section class="learn-preview">
-        <h2>📖 Apprendre</h2>
+        </section>
 
-        <p>
-          Commence avec le niveau A1 et avance étape par étape.
-        </p>
 
-        <div class="levels">
-          ${createLevelButtons()}
-        </div>
-      </section>
+        <section class="learn-section">
 
-      <section class="daily-test">
-        <h2>📝 Mini-Test</h2>
+          <h2>📖 Apprendre</h2>
 
-        <p>
-          Teste tes connaissances avec de petites questions.
-        </p>
+          <p>
+            Commence avec le niveau A1 et avance étape par étape.
+          </p>
 
-        <button class="secondary-btn" id="goQuiz">
-          Commencer un test
-        </button>
-      </section>
-    `;
+          <div class="levels">
 
-    const startButton = document.getElementById("startLearning");
+            <button
+              class="level active"
+              onclick="DeutschConnect.goA1()"
+            >
+              A1
+            </button>
 
-    if (startButton) {
-      startButton.addEventListener("click", showLearn);
-    }
+            <button class="level locked">
+              A2 🔒
+            </button>
 
-    const quizButton = document.getElementById("goQuiz");
+            <button class="level locked">
+              B1 🔒
+            </button>
 
-    if (quizButton) {
-      quizButton.addEventListener("click", showQuiz);
-    }
+            <button class="level locked">
+              B2 🔒
+            </button>
 
-    updateProgressDisplay();
-  }
+            <button class="level locked">
+              C1 🔒
+            </button>
 
-  // ----------------------------------------------------------
-  // BOUTONS NIVEAUX
-  // ----------------------------------------------------------
+            <button class="level locked">
+              C2 🔒
+            </button>
 
-  function createLevelButtons() {
-    const levels = ["A1", "A2", "B1", "B2", "C1", "C2"];
+          </div>
 
-    return levels
-      .map(function (level) {
-        const active = level === "A1" ? "active" : "locked";
+        </section>
 
-        return `
+
+        <section class="quiz-card">
+
+          <h2>📝 Mini-Test</h2>
+
+          <p>
+            Teste tes connaissances avec de petites questions.
+          </p>
+
           <button
-            class="level-button ${active}"
-            data-level="${level}"
+            class="primary-btn"
+            onclick="DeutschConnect.goQuiz()"
           >
-            ${level}
-            ${level !== "A1" ? "🔒" : ""}
+            Commencer un test
           </button>
-        `;
-      })
-      .join("");
+
+        </section>
+
+      </main>
+
+
+      ${renderFooter()}
+    `;
   }
 
   // ----------------------------------------------------------
   // PAGE APPRENDRE
   // ----------------------------------------------------------
 
-  function showLearn() {
-    const main = getMainContainer();
+  function renderLearn() {
 
-    const lessons =
-      typeof getA1Lessons === "function"
-        ? getA1Lessons()
-        : typeof A1_LESSONS !== "undefined"
-        ? A1_LESSONS
-        : [];
+    const app = getApp();
 
-    main.innerHTML = `
-      <section class="page-header">
-        <button class="back-button" id="backHome">
-          ← Accueil
+    app.innerHTML = `
+
+      ${renderNavbar()}
+
+      <main class="container">
+
+        <section class="page-header">
+
+          <span>📖</span>
+
+          <h1>Apprendre l'allemand</h1>
+
+          <p>
+            Choisis ton niveau.
+          </p>
+
+        </section>
+
+
+        <div class="levels large">
+
+          <button
+            class="level active"
+            onclick="DeutschConnect.goA1()"
+          >
+            🇩🇪 A1
+          </button>
+
+          <button class="level locked">
+            A2 🔒
+          </button>
+
+          <button class="level locked">
+            B1 🔒
+          </button>
+
+          <button class="level locked">
+            B2 🔒
+          </button>
+
+          <button class="level locked">
+            C1 🔒
+          </button>
+
+          <button class="level locked">
+            C2 🔒
+          </button>
+
+        </div>
+
+
+        <section class="info-card">
+
+          <h2>🇩🇪 Niveau A1</h2>
+
+          <p>
+            Lerne die Grundlagen der deutschen Sprache.
+          </p>
+
+          <button
+            class="primary-btn"
+            onclick="DeutschConnect.goA1()"
+          >
+            A1 Lernzettel öffnen
+          </button>
+
+        </section>
+
+      </main>
+
+      ${renderFooter()}
+    `;
+  }
+
+  // ----------------------------------------------------------
+  // LISTE A1
+  // ----------------------------------------------------------
+
+  function renderA1() {
+
+    const app = getApp();
+
+    const lessons = getA1Lessons();
+    const completed = getProgress();
+
+    let lessonHTML = "";
+
+    lessons.forEach(function (lesson) {
+
+      const done = completed.includes(lesson.id);
+
+      lessonHTML += `
+
+        <article class="lesson-card">
+
+          <div class="lesson-number">
+            ${String(lesson.number).padStart(2, "0")}
+          </div>
+
+          <div class="lesson-content">
+
+            <div class="lesson-level">
+              A1 · Lernzettel ${lesson.number}
+            </div>
+
+            <h3>
+              ${escapeHTML(lesson.title)}
+            </h3>
+
+            <p class="french-title">
+              ${escapeHTML(lesson.frenchTitle)}
+            </p>
+
+            <p>
+              ${escapeHTML(lesson.lernziel)}
+            </p>
+
+            ${
+              done
+                ? `<span class="completed">✓ Terminé</span>`
+                : ""
+            }
+
+          </div>
+
+          <button
+            class="lesson-button"
+            onclick="DeutschConnect.goLesson('${lesson.id}')"
+          >
+            ${
+              done
+                ? "Réviser →"
+                : "Commencer →"
+            }
+          </button>
+
+        </article>
+      `;
+    });
+
+
+    app.innerHTML = `
+
+      ${renderNavbar()}
+
+      <main class="container">
+
+        <section class="page-header">
+
+          <div class="back-button">
+            <button onclick="DeutschConnect.goLearn()">
+              ← Retour
+            </button>
+          </div>
+
+          <span>🇩🇪</span>
+
+          <h1>A1 — Deutsch lernen</h1>
+
+          <p>
+            11 Lernzettel für Deutsch-Anfänger.
+          </p>
+
+        </section>
+
+
+        <section class="progress-card">
+
+          <h2>📊 Deine A1-Fortschritt</h2>
+
+          <div class="progress-number">
+
+            ${
+              lessons.length > 0
+                ? Math.round(
+                    (completed.length / lessons.length) * 100
+                  )
+                : 0
+            }%
+
+          </div>
+
+          <div class="progress-bar">
+
+            <div
+              class="progress-fill"
+              style="width:${
+                lessons.length > 0
+                  ? Math.round(
+                      (completed.length / lessons.length) * 100
+                    )
+                  : 0
+              }%"
+            ></div>
+
+          </div>
+
+        </section>
+
+
+        <section class="lessons-list">
+
+          ${lessonHTML}
+
+        </section>
+
+      </main>
+
+      ${renderFooter()}
+    `;
+  }
+
+  // ----------------------------------------------------------
+  // UNE LEÇON
+  // ----------------------------------------------------------
+
+  function renderLesson(id) {
+
+    const app = getApp();
+
+    const lesson = getLessonById(id);
+
+    if (!lesson) {
+
+      app.innerHTML = `
+
+        ${renderNavbar()}
+
+        <main class="container">
+
+          <section class="error-card">
+
+            <h1>❌ Leçon introuvable</h1>
+
+            <p>
+              Diese Lektion existiert nicht.
+            </p>
+
+            <button
+              class="primary-btn"
+              onclick="DeutschConnect.goA1()"
+            >
+              Retour aux leçons
+            </button>
+
+          </section>
+
+        </main>
+
+      `;
+
+      return;
+    }
+
+
+    currentLesson = lesson;
+
+
+    app.innerHTML = `
+
+      ${renderNavbar()}
+
+      <main class="container lesson-page">
+
+        <button
+          class="back-link"
+          onclick="DeutschConnect.goA1()"
+        >
+          ← Zurück zu A1
         </button>
 
-        <p class="badge">🇩🇪 Niveau A1</p>
 
-        <h1>Apprendre l'allemand</h1>
+        <header class="lesson-header">
 
-        <p>
-          Wähle eine Lektion und lerne Schritt für Schritt.
-        </p>
-      </section>
+          <div class="lesson-badge">
+            A1 · ${lesson.number}
+          </div>
 
-      <section class="lesson-list">
+          <h1>
+            ${escapeHTML(lesson.title)}
+          </h1>
 
-        <h2>📚 A1 — Lernzettel</h2>
+          <h2>
+            ${escapeHTML(lesson.frenchTitle)}
+          </h2>
 
-        <div class="lesson-grid">
+          <p>
+            ${escapeHTML(lesson.lernziel)}
+          </p>
+
+        </header>
+
+
+        <section class="lesson-section">
+
+          <h2>📖 Erklärung</h2>
+
+          <div class="explanation">
+
+            ${formatText(lesson.erklaerung)}
+
+          </div>
+
+        </section>
+
+
+        ${
+          lesson.konjugation
+            ? renderKonjugation(lesson.konjugation)
+            : ""
+        }
+
+
+        ${
+          lesson.pronomen
+            ? renderPronomen(lesson.pronomen)
+            : ""
+        }
+
+
+        ${
+          lesson.wortschatz
+            ? renderVocabulary(
+                lesson.wortschatz
+              )
+            : ""
+        }
+
+
+        ${
+          lesson.kategorien
+            ? renderCategories(
+                lesson.kategorien
+              )
+            : ""
+        }
+
+
+        ${
+          lesson.beispiele
+            ? renderExamples(
+                lesson.beispiele
+              )
+            : ""
+        }
+
+
+        ${
+          lesson.merke
+            ? renderMerke(
+                lesson.merke
+              )
+            : ""
+        }
+
+
+        <section class="lesson-section test-section">
+
+          <h2>📝 Mini-Test</h2>
+
+          <p>
+            Teste dein Wissen.
+          </p>
+
+          <button
+            class="primary-btn"
+            onclick="DeutschConnect.startLessonQuiz('${lesson.id}')"
+          >
+            Mini-Test starten
+          </button>
+
+        </section>
+
+
+        <div class="lesson-navigation">
 
           ${
-            lessons.length
-              ? lessons.map(createLessonCard).join("")
+            lesson.number > 1
+              ? `
+                <button
+                  onclick="DeutschConnect.goLesson(
+                    'a1-${String(
+                      lesson.number - 1
+                    ).padStart(2, "0")}'
+                  )"
+                >
+                  ← Lektion ${lesson.number - 1}
+                </button>
+              `
+              : "<span></span>"
+          }
+
+
+          ${
+            lesson.number < 11
+              ? `
+                <button
+                  onclick="DeutschConnect.goLesson(
+                    'a1-${String(
+                      lesson.number + 1
+                    ).padStart(2, "0")}'
+                  )"
+                >
+                  Lektion ${lesson.number + 1} →
+                </button>
+              `
               : `
-                <div class="empty-state">
-                  <p>Keine Lektionen gefunden.</p>
-                </div>
+                <button
+                  onclick="DeutschConnect.goA1()"
+                >
+                  ✓ A1 Übersicht
+                </button>
               `
           }
 
         </div>
-      </section>
-    `;
 
-    document
-      .getElementById("backHome")
-      ?.addEventListener("click", showHome);
+      </main>
 
-    document.querySelectorAll("[data-lesson-id]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        openLesson(button.dataset.lessonId);
-      });
-    });
-  }
-
-  // ----------------------------------------------------------
-  // CARTE LEÇON
-  // ----------------------------------------------------------
-
-  function createLessonCard(lesson) {
-    return `
-      <article class="lesson-card">
-
-        <div class="lesson-number">
-          A1.${String(lesson.number).padStart(2, "0")}
-        </div>
-
-        <h3>${escapeHTML(lesson.title)}</h3>
-
-        <p class="lesson-french-title">
-          ${escapeHTML(lesson.frenchTitle || "")}
-        </p>
-
-        <p>
-          ${escapeHTML(lesson.lernziel || "")}
-        </p>
-
-        <button
-          class="primary-btn"
-          data-lesson-id="${lesson.id}"
-        >
-          Lernzettel öffnen →
-        </button>
-
-      </article>
+      ${renderFooter()}
     `;
   }
 
   // ----------------------------------------------------------
-  // OUVRIR UNE LEÇON
+  // FORMAT TEXTE
   // ----------------------------------------------------------
 
-  function openLesson(id) {
-    const lesson =
-      typeof getLessonById === "function"
-        ? getLessonById(id)
-        : A1_LESSONS.find(function (item) {
-            return item.id === id;
-          });
+  function formatText(text) {
 
-    if (!lesson) {
-      showError("Die Lektion wurde nicht gefunden.");
-      return;
-    }
+    if (!text) return "";
 
-    currentLesson = lesson;
+    return escapeHTML(text)
+      .trim()
+      .split(/\n\s*\n/)
+      .map(function (paragraph) {
 
-    const main = getMainContainer();
+        return `<p>${paragraph
+          .replace(/\n/g, "<br>")}</p>`;
 
-    main.innerHTML = `
-      <section class="lesson-page">
-
-        <button class="back-button" id="backLessons">
-          ← Alle A1-Lektionen
-        </button>
-
-        <div class="lesson-heading">
-
-          <span class="badge">
-            🇩🇪 A1.${String(lesson.number).padStart(2, "0")}
-          </span>
-
-          <h1>${escapeHTML(lesson.title)}</h1>
-
-          <p class="french-subtitle">
-            ${escapeHTML(lesson.frenchTitle || "")}
-          </p>
-
-        </div>
-
-        <div class="lesson-content">
-
-          ${renderLernziel(lesson)}
-
-          ${renderErklaerung(lesson)}
-
-          ${renderVocabulary(lesson)}
-
-          ${renderPronomen(lesson)}
-
-          ${renderKonjugation(lesson)}
-
-          ${renderKategorien(lesson)}
-
-          ${renderDialog(lesson)}
-
-          ${renderExamples(lesson)}
-
-          ${renderMerke(lesson)}
-
-          ${renderMiniTestStart(lesson)}
-
-        </div>
-
-      </section>
-    `;
-
-    document
-      .getElementById("backLessons")
-      ?.addEventListener("click", showLearn);
-
-    document
-      .getElementById("startLessonTest")
-      ?.addEventListener("click", function () {
-        startLessonTest(lesson);
-      });
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  }
-
-  // ----------------------------------------------------------
-  // LERNZIEL
-  // ----------------------------------------------------------
-
-  function renderLernziel(lesson) {
-    if (!lesson.lernziel) {
-      return "";
-    }
-
-    return `
-      <section class="content-card learning-goal">
-        <h2>🎯 Lernziel</h2>
-
-        <p>
-          ${escapeHTML(lesson.lernziel)}
-        </p>
-      </section>
-    `;
-  }
-
-  // ----------------------------------------------------------
-  // ERKLÄRUNG
-  // ----------------------------------------------------------
-
-  function renderErklaerung(lesson) {
-    if (!lesson.erklaerung) {
-      return "";
-    }
-
-    return `
-      <section class="content-card">
-
-        <h2>🧠 Kurz erklärt</h2>
-
-        <div class="simple-german">
-          ${formatText(lesson.erklaerung)}
-        </div>
-
-      </section>
-    `;
+      })
+      .join("");
   }
 
   // ----------------------------------------------------------
   // VOCABULAIRE
   // ----------------------------------------------------------
 
-  function renderVocabulary(lesson) {
-    if (!lesson.wortschatz || !lesson.wortschatz.length) {
-      return "";
-    }
+  function renderVocabulary(words) {
 
     return `
-      <section class="content-card">
+
+      <section class="lesson-section">
 
         <h2>📚 Wortschatz</h2>
 
-        <div class="vocabulary-table">
+        <div class="vocabulary-grid">
 
-          <div class="vocabulary-header">
-            <strong>Deutsch 🇩🇪</strong>
-            <strong>Français 🇫🇷</strong>
-          </div>
-
-          ${lesson.wortschatz
+          ${words
             .map(function (word) {
-              return `
-                <div class="vocabulary-row">
 
-                  <span>
+              return `
+
+                <div class="word-card">
+
+                  <strong>
                     ${escapeHTML(word.de)}
-                  </span>
+                  </strong>
 
                   <span>
                     ${escapeHTML(word.fr)}
                   </span>
 
                 </div>
+
               `;
+
             })
             .join("")}
 
         </div>
 
       </section>
+
     `;
   }
 
   // ----------------------------------------------------------
-  // PRONOMEN
+  // KATEGORIEN
   // ----------------------------------------------------------
 
-  function renderPronomen(lesson) {
-    if (!lesson.pronomen || !lesson.pronomen.length) {
-      return "";
-    }
+  function renderCategories(categories) {
 
     return `
-      <section class="content-card">
 
-        <h2>👤 Personalpronomen</h2>
+      <section class="lesson-section">
 
-        <div class="simple-table">
+        <h2>📚 Wortschatz</h2>
 
-          <div class="table-row table-head">
-            <strong>Deutsch</strong>
-            <strong>Français</strong>
-          </div>
+        ${categories
+          .map(function (category) {
 
-          ${lesson.pronomen
-            .map(function (item) {
-              return `
-                <div class="table-row">
-                  <span>${escapeHTML(item.person)}</span>
-                  <span>${escapeHTML(item.fr)}</span>
+            return `
+
+              <div class="category-card">
+
+                <h3>
+                  ${escapeHTML(category.name)}
+                </h3>
+
+                <div class="vocabulary-grid">
+
+                  ${category.words
+                    .map(function (word) {
+
+                      return `
+
+                        <div class="word-card">
+
+                          <strong>
+                            ${escapeHTML(word.de)}
+                          </strong>
+
+                          <span>
+                            ${escapeHTML(word.fr)}
+                          </span>
+
+                        </div>
+
+                      `;
+
+                    })
+                    .join("")}
+
                 </div>
-              `;
-            })
-            .join("")}
 
-        </div>
+              </div>
+
+            `;
+
+          })
+          .join("")}
 
       </section>
+
     `;
   }
 
   // ----------------------------------------------------------
-  // CONJUGAISON
+  // KONJUGATION
   // ----------------------------------------------------------
 
-  function renderKonjugation(lesson) {
-    if (!lesson.konjugation || !lesson.konjugation.length) {
-      return "";
-    }
+  function renderKonjugation(rows) {
 
     return `
-      <section class="content-card">
+
+      <section class="lesson-section">
 
         <h2>🔤 Konjugation</h2>
 
-        <div class="simple-table">
+        <div class="table-wrapper">
 
-          <div class="table-row table-head">
-            <strong>Person</strong>
-            <strong>Verb</strong>
-            <strong>Français</strong>
-          </div>
+          <table class="lesson-table">
 
-          ${lesson.konjugation
-            .map(function (item) {
-              return `
-                <div class="table-row">
+            <thead>
 
-                  <span>
-                    ${escapeHTML(item.person)}
-                  </span>
+              <tr>
+                <th>Person</th>
+                <th>Deutsch</th>
+                <th>Français</th>
+              </tr>
 
-                  <strong>
-                    ${escapeHTML(item.form)}
-                  </strong>
+            </thead>
 
-                  <span>
-                    ${escapeHTML(item.fr)}
-                  </span>
+            <tbody>
 
-                </div>
-              `;
-            })
-            .join("")}
+              ${rows
+                .map(function (row) {
+
+                  return `
+
+                    <tr>
+
+                      <td>
+                        ${escapeHTML(row.person)}
+                      </td>
+
+                      <td>
+                        <strong>
+                          ${escapeHTML(row.form)}
+                        </strong>
+                      </td>
+
+                      <td>
+                        ${escapeHTML(row.fr)}
+                      </td>
+
+                    </tr>
+
+                  `;
+
+                })
+                .join("")}
+
+            </tbody>
+
+          </table>
 
         </div>
 
       </section>
+
     `;
   }
 
   // ----------------------------------------------------------
-  // CATÉGORIES DE VOCABULAIRE
+  // PRONOMS
   // ----------------------------------------------------------
 
-  function renderKategorien(lesson) {
-    if (!lesson.kategorien || !lesson.kategorien.length) {
-      return "";
-    }
+  function renderPronomen(rows) {
 
-    return lesson.kategorien
-      .map(function (category) {
-        return `
-          <section class="content-card">
+    return `
 
-            <h2>
-              ${escapeHTML(category.name)}
-            </h2>
+      <section class="lesson-section">
 
-            <div class="vocabulary-table">
+        <h2>👤 Personalpronomen</h2>
 
-              <div class="vocabulary-header">
-                <strong>Deutsch 🇩🇪</strong>
-                <strong>Français 🇫🇷</strong>
-              </div>
+        <div class="table-wrapper">
 
-              ${category.words
-                .map(function (word) {
+          <table class="lesson-table">
+
+            <thead>
+
+              <tr>
+                <th>Deutsch</th>
+                <th>Français</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              ${rows
+                .map(function (row) {
+
                   return `
-                    <div class="vocabulary-row">
-                      <span>
-                        ${escapeHTML(word.de)}
-                      </span>
 
-                      <span>
-                        ${escapeHTML(word.fr)}
-                      </span>
-                    </div>
+                    <tr>
+
+                      <td>
+                        <strong>
+                          ${escapeHTML(row.person)}
+                        </strong>
+                      </td>
+
+                      <td>
+                        ${escapeHTML(row.fr)}
+                      </td>
+
+                    </tr>
+
                   `;
+
                 })
                 .join("")}
 
-            </div>
+            </tbody>
 
-          </section>
-        `;
-      })
-      .join("");
-  }
-
-  // ----------------------------------------------------------
-  // DIALOGUE
-  // ----------------------------------------------------------
-
-  function renderDialog(lesson) {
-    if (!lesson.dialog || !lesson.dialog.length) {
-      return "";
-    }
-
-    return `
-      <section class="content-card">
-
-        <h2>💬 Dialog</h2>
-
-        <div class="dialog">
-
-          ${lesson.dialog
-            .map(function (line) {
-              return `
-                <div class="dialog-line">
-
-                  <strong>
-                    ${escapeHTML(line.person)}
-                  </strong>
-
-                  <span>
-                    ${escapeHTML(line.text)}
-                  </span>
-
-                </div>
-              `;
-            })
-            .join("")}
+          </table>
 
         </div>
 
       </section>
+
     `;
   }
 
@@ -680,48 +1002,42 @@
   // EXEMPLES
   // ----------------------------------------------------------
 
-  function renderExamples(lesson) {
-    if (!lesson.beispiele || !lesson.beispiele.length) {
-      return "";
-    }
+  function renderExamples(examples) {
 
     return `
-      <section class="content-card">
+
+      <section class="lesson-section">
 
         <h2>💬 Beispiele</h2>
 
         <div class="examples">
 
-          ${lesson.beispiele
+          ${examples
             .map(function (example) {
 
-              if (typeof example === "string") {
-                return `
-                  <div class="example-card">
-                    <strong>${escapeHTML(example)}</strong>
-                  </div>
-                `;
-              }
-
               return `
+
                 <div class="example-card">
 
-                  <strong>
+                  <div class="example-de">
                     🇩🇪 ${escapeHTML(example.de)}
-                  </strong>
+                  </div>
 
-                  <span>
+                  <div class="example-fr">
                     🇫🇷 ${escapeHTML(example.fr)}
-                  </span>
+                  </div>
 
                 </div>
+
               `;
+
             })
             .join("")}
 
         </div>
 
       </section>
+
     `;
   }
 
@@ -729,755 +1045,687 @@
   // MERKE
   // ----------------------------------------------------------
 
-  function renderMerke(lesson) {
-    if (!lesson.merke || !lesson.merke.length) {
-      return "";
-    }
+  function renderMerke(items) {
 
     return `
-      <section class="content-card remember-card">
+
+      <section class="lesson-section merke-section">
 
         <h2>💡 Merke</h2>
 
         <ul>
 
-          ${lesson.merke
+          ${items
             .map(function (item) {
+
               return `
                 <li>
                   ${escapeHTML(item)}
                 </li>
               `;
+
             })
             .join("")}
 
         </ul>
 
       </section>
+
     `;
   }
 
   // ----------------------------------------------------------
-  // BOUTON MINI TEST
+  // QUIZ D'UNE LEÇON
   // ----------------------------------------------------------
 
-  function renderMiniTestStart(lesson) {
-    if (!lesson.miniTest || !lesson.miniTest.length) {
-      return "";
+  function startLessonQuiz(id) {
+
+    const lesson = getLessonById(id);
+
+    if (!lesson || !lesson.miniTest) {
+      alert("Dieser Test ist noch nicht verfügbar.");
+      return;
     }
 
-    return `
-      <section class="test-start">
-
-        <div>
-          <span class="badge">📝 Mini-Test</span>
-
-          <h2>Teste dein Wissen!</h2>
-
-          <p>
-            ${lesson.miniTest.length} Fragen
-          </p>
-        </div>
-
-        <button
-          class="primary-btn"
-          id="startLessonTest"
-        >
-          Test starten
-        </button>
-
-      </section>
-    `;
-  }
-
-  // ----------------------------------------------------------
-  // MINI TEST
-  // ----------------------------------------------------------
-
-  function startLessonTest(lesson) {
     currentLesson = lesson;
     currentQuestion = 0;
-    currentScore = 0;
-    answered = false;
+    score = 0;
 
     renderQuestion();
   }
 
+
   function renderQuestion() {
-    const lesson = currentLesson;
 
-    if (!lesson || !lesson.miniTest) {
-      return;
-    }
+    const app = getApp();
 
-    const questions = lesson.miniTest;
+    const questions = currentLesson.miniTest;
 
     if (currentQuestion >= questions.length) {
-      showTestResult();
+      finishLessonQuiz();
       return;
     }
 
-    const question = questions[currentQuestion];
+    const question =
+      questions[currentQuestion];
 
-    const main = getMainContainer();
+    const percent =
+      Math.round(
+        (currentQuestion / questions.length) * 100
+      );
 
-    main.innerHTML = `
-      <section class="quiz-page">
 
-        <button class="back-button" id="exitQuiz">
+    app.innerHTML = `
+
+      ${renderNavbar()}
+
+      <main class="container quiz-page">
+
+        <button
+          class="back-link"
+          onclick="DeutschConnect.goLesson('${currentLesson.id}')"
+        >
           ← Zurück zur Lektion
         </button>
 
-        <div class="quiz-progress">
 
-          <span>
-            Frage ${currentQuestion + 1}
-            / ${questions.length}
-          </span>
+        <section class="quiz-container">
 
-          <div class="progress-bar">
-            <div
-              class="progress-fill"
-              style="width:${((currentQuestion) / questions.length) * 100}%"
-            ></div>
+          <div class="quiz-progress">
+
+            Frage
+            ${currentQuestion + 1}
+            /
+            ${questions.length}
+
           </div>
 
-        </div>
 
-        <div class="quiz-card">
+          <div class="progress-bar">
 
-          <span class="badge">
-            🇩🇪 A1
-          </span>
+            <div
+              class="progress-fill"
+              style="width:${percent}%"
+            ></div>
+
+          </div>
+
 
           <h1>
             ${escapeHTML(question.question)}
           </h1>
 
+
           <div class="quiz-options">
 
             ${question.options
               .map(function (option, index) {
+
                 return `
+
                   <button
                     class="quiz-option"
-                    data-option="${index}"
+                    onclick="DeutschConnect.answerQuestion(${index})"
                   >
                     ${escapeHTML(option)}
                   </button>
+
                 `;
+
               })
               .join("")}
 
           </div>
 
-          <div
-            id="quizFeedback"
-            class="quiz-feedback"
-          ></div>
+        </section>
 
-          <button
-            id="nextQuestion"
-            class="primary-btn hidden"
-          >
-            ${currentQuestion === questions.length - 1
-              ? "Ergebnis anzeigen"
-              : "Nächste Frage →"}
-          </button>
+      </main>
 
-        </div>
-
-      </section>
     `;
-
-    document
-      .getElementById("exitQuiz")
-      ?.addEventListener("click", function () {
-        openLesson(lesson.id);
-      });
-
-    document.querySelectorAll("[data-option]").forEach(function (button) {
-      button.addEventListener("click", function () {
-        answerQuestion(Number(button.dataset.option));
-      });
-    });
-
-    document
-      .getElementById("nextQuestion")
-      ?.addEventListener("click", function () {
-        currentQuestion++;
-        answered = false;
-        renderQuestion();
-      });
   }
 
-  // ----------------------------------------------------------
-  // RÉPONSE QUESTION
-  // ----------------------------------------------------------
 
-  function answerQuestion(selectedIndex) {
-    if (answered) {
-      return;
-    }
+  function answerQuestion(answer) {
 
-    answered = true;
+    const question =
+      currentLesson.miniTest[currentQuestion];
 
-    const question = currentLesson.miniTest[currentQuestion];
+    const buttons =
+      document.querySelectorAll(".quiz-option");
 
-    const options = document.querySelectorAll(".quiz-option");
-
-    options.forEach(function (button, index) {
+    buttons.forEach(function (button) {
       button.disabled = true;
-
-      if (index === question.correct) {
-        button.classList.add("correct");
-      }
-
-      if (
-        index === selectedIndex &&
-        selectedIndex !== question.correct
-      ) {
-        button.classList.add("incorrect");
-      }
     });
 
-    const feedback = document.getElementById("quizFeedback");
 
-    if (selectedIndex === question.correct) {
-      currentScore++;
+    if (answer === question.correct) {
 
-      feedback.innerHTML = `
-        <div class="correct-feedback">
-          ✅ Richtig! Sehr gut!
-        </div>
-      `;
+      score++;
+
+      buttons[answer].classList.add("correct");
+
     } else {
-      feedback.innerHTML = `
-        <div class="incorrect-feedback">
-          ❌ Nicht ganz.
-          <br>
-          Die richtige Antwort ist:
-          <strong>
-            ${escapeHTML(question.options[question.correct])}
-          </strong>
-        </div>
-      `;
+
+      buttons[answer].classList.add("wrong");
+
+      buttons[
+        question.correct
+      ].classList.add("correct");
+
     }
 
-    const nextButton = document.getElementById("nextQuestion");
 
-    if (nextButton) {
-      nextButton.classList.remove("hidden");
-    }
+    setTimeout(function () {
+
+      currentQuestion++;
+
+      renderQuestion();
+
+    }, 900);
   }
 
-  // ----------------------------------------------------------
-  // RÉSULTAT TEST
-  // ----------------------------------------------------------
 
-  function showTestResult() {
-    const total = currentLesson.miniTest.length;
+  function finishLessonQuiz() {
 
-    const percentage = Math.round(
-      (currentScore / total) * 100
-    );
+    const total =
+      currentLesson.miniTest.length;
 
-    saveTestResult(
-      currentLesson.id,
-      currentScore,
-      total
-    );
+    const percent =
+      Math.round((score / total) * 100);
 
-    let message = "";
 
-    if (percentage === 100) {
-      message = "Perfekt! 🎉";
-    } else if (percentage >= 75) {
-      message = "Sehr gut! 👏";
-    } else if (percentage >= 50) {
-      message = "Gut gemacht! 👍";
-    } else {
-      message = "Weiter üben! 💪";
+    if (percent >= 60) {
+
+      saveCompletedLesson(
+        currentLesson.id
+      );
+
+      addXP(10);
+      addTestCompleted();
+
     }
 
-    const main = getMainContainer();
 
-    main.innerHTML = `
-      <section class="result-page">
+    const message =
+      percent >= 60
+        ? "Sehr gut! Lektion geschafft! 🎉"
+        : "Weiter üben! Du kannst es schaffen. 💪";
 
-        <div class="result-card">
 
-          <span class="result-icon">🏆</span>
+    getApp().innerHTML = `
 
-          <h1>${message}</h1>
+      ${renderNavbar()}
 
-          <p>
-            ${escapeHTML(currentLesson.title)}
-          </p>
+      <main class="container">
 
-          <div class="score">
+        <section class="result-card">
 
-            <strong>
-              ${currentScore}/${total}
-            </strong>
+          <div class="result-icon">
+            ${
+              percent >= 60
+                ? "🎉"
+                : "📚"
+            }
+          </div>
 
-            <span>
-              ${percentage}%
-            </span>
+          <h1>
+            ${message}
+          </h1>
 
+          <div class="result-score">
+            ${score} / ${total}
           </div>
 
           <p>
-            ${
-              percentage >= 75
-                ? "Du hast die Lektion gut verstanden."
-                : "Wiederhole den Lernzettel und versuche es noch einmal."
-            }
+            ${percent}% richtig
           </p>
 
-          <div class="result-buttons">
+          ${
+            percent >= 60
+              ? `
+                <p class="xp-earned">
+                  ⭐ +10 XP
+                </p>
+              `
+              : `
+                <p>
+                  Mindestens 60% sind nötig,
+                  um die Lektion abzuschließen.
+                </p>
+              `
+          }
+
+
+          <div class="result-actions">
 
             <button
               class="primary-btn"
-              id="retryTest"
+              onclick="DeutschConnect.goLesson('${currentLesson.id}')"
             >
-              🔄 Noch einmal
+              Lektion wiederholen
             </button>
 
             <button
               class="secondary-btn"
-              id="backToLesson"
+              onclick="DeutschConnect.goA1()"
             >
-              📖 Lernzettel
-            </button>
-
-            <button
-              class="secondary-btn"
-              id="backToLearn"
-            >
-              📚 Alle Lektionen
+              A1 Übersicht
             </button>
 
           </div>
 
-        </div>
+        </section>
 
-      </section>
+      </main>
+
+      ${renderFooter()}
     `;
-
-    document
-      .getElementById("retryTest")
-      ?.addEventListener("click", function () {
-        startLessonTest(currentLesson);
-      });
-
-    document
-      .getElementById("backToLesson")
-      ?.addEventListener("click", function () {
-        openLesson(currentLesson.id);
-      });
-
-    document
-      .getElementById("backToLearn")
-      ?.addEventListener("click", showLearn);
-
-    updateProgressDisplay();
   }
 
   // ----------------------------------------------------------
-  // PAGE QUIZ
+  // QUIZ GÉNÉRAL
   // ----------------------------------------------------------
 
-  function showQuiz() {
-    const lessons =
-      typeof getA1Lessons === "function"
-        ? getA1Lessons()
-        : A1_LESSONS;
+  function renderQuizStart() {
 
-    const lessonsWithTests = lessons.filter(function (lesson) {
-      return lesson.miniTest && lesson.miniTest.length > 0;
+    const app = getApp();
+
+    app.innerHTML = `
+
+      ${renderNavbar()}
+
+      <main class="container">
+
+        <section class="quiz-start">
+
+          <div class="quiz-icon">
+            📝
+          </div>
+
+          <h1>
+            Mini-Test A1
+          </h1>
+
+          <p>
+            Teste dein Deutsch mit Fragen aus
+            den A1-Lernzetteln.
+          </p>
+
+          <button
+            class="primary-btn"
+            onclick="DeutschConnect.startRandomQuiz()"
+          >
+            Test starten
+          </button>
+
+        </section>
+
+      </main>
+
+      ${renderFooter()}
+    `;
+  }
+
+
+  function startRandomQuiz() {
+
+    const lessons = getA1Lessons();
+
+    const allQuestions = [];
+
+    lessons.forEach(function (lesson) {
+
+      if (lesson.miniTest) {
+
+        lesson.miniTest.forEach(function (question) {
+
+          allQuestions.push({
+            ...question,
+            lessonId: lesson.id
+          });
+
+        });
+
+      }
+
     });
 
-    const main = getMainContainer();
 
-    main.innerHTML = `
-      <section class="page-header">
+    if (allQuestions.length === 0) {
 
-        <button class="back-button" id="backHome">
-          ← Accueil
-        </button>
+      alert("Keine Fragen verfügbar.");
 
-        <span class="badge">📝 A1</span>
+      return;
+    }
 
-        <h1>Teste ton allemand</h1>
 
-        <p>
-          Wähle une leçon et teste tes connaissances.
-        </p>
+    const shuffled =
+      allQuestions.sort(
+        function () {
+          return Math.random() - 0.5;
+        }
+      );
 
-      </section>
 
-      <section class="quiz-selection">
+    window.generalQuiz = {
+      questions: shuffled.slice(0, 10),
+      current: 0,
+      score: 0
+    };
 
-        <div class="lesson-grid">
 
-          ${lessonsWithTests
-            .map(function (lesson) {
-              return `
-                <article class="lesson-card">
+    renderGeneralQuestion();
+  }
 
-                  <span class="lesson-number">
-                    A1.${String(lesson.number).padStart(2, "0")}
-                  </span>
 
-                  <h3>
-                    ${escapeHTML(lesson.title)}
-                  </h3>
+  function renderGeneralQuestion() {
 
-                  <p>
-                    ${lesson.miniTest.length} Fragen
-                  </p>
+    const quiz =
+      window.generalQuiz;
+
+    if (!quiz) return;
+
+
+    if (quiz.current >= quiz.questions.length) {
+
+      finishGeneralQuiz();
+
+      return;
+    }
+
+
+    const question =
+      quiz.questions[quiz.current];
+
+
+    getApp().innerHTML = `
+
+      ${renderNavbar()}
+
+      <main class="container quiz-page">
+
+        <section class="quiz-container">
+
+          <div class="quiz-progress">
+
+            Frage
+            ${quiz.current + 1}
+            /
+            ${quiz.questions.length}
+
+          </div>
+
+
+          <h1>
+            ${escapeHTML(question.question)}
+          </h1>
+
+
+          <div class="quiz-options">
+
+            ${question.options
+              .map(function (option, index) {
+
+                return `
 
                   <button
-                    class="primary-btn"
-                    data-quiz-lesson="${lesson.id}"
+                    class="quiz-option"
+                    onclick="DeutschConnect.answerGeneral(${index})"
                   >
-                    Test starten
+                    ${escapeHTML(option)}
                   </button>
 
-                </article>
-              `;
-            })
-            .join("")}
+                `;
 
-        </div>
+              })
+              .join("")}
 
-      </section>
+          </div>
+
+        </section>
+
+      </main>
+
     `;
+  }
 
-    document
-      .getElementById("backHome")
-      ?.addEventListener("click", showHome);
 
-    document
-      .querySelectorAll("[data-quiz-lesson]")
-      .forEach(function (button) {
-        button.addEventListener("click", function () {
-          const id = button.dataset.quizLesson;
+  function answerGeneral(answer) {
 
-          const lesson =
-            typeof getLessonById === "function"
-              ? getLessonById(id)
-              : A1_LESSONS.find(function (item) {
-                  return item.id === id;
-                });
+    const quiz =
+      window.generalQuiz;
 
-          if (lesson) {
-            startLessonTest(lesson);
+    const question =
+      quiz.questions[quiz.current];
+
+
+    const buttons =
+      document.querySelectorAll(".quiz-option");
+
+
+    buttons.forEach(function (button) {
+      button.disabled = true;
+    });
+
+
+    if (answer === question.correct) {
+
+      quiz.score++;
+
+      buttons[answer].classList.add("correct");
+
+    } else {
+
+      buttons[answer].classList.add("wrong");
+
+      buttons[
+        question.correct
+      ].classList.add("correct");
+
+    }
+
+
+    setTimeout(function () {
+
+      quiz.current++;
+
+      renderGeneralQuestion();
+
+    }, 800);
+  }
+
+
+  function finishGeneralQuiz() {
+
+    const quiz =
+      window.generalQuiz;
+
+    const total =
+      quiz.questions.length;
+
+    const percent =
+      Math.round(
+        (quiz.score / total) * 100
+      );
+
+
+    addTestCompleted();
+
+    if (percent >= 60) {
+      addXP(20);
+    }
+
+
+    getApp().innerHTML = `
+
+      ${renderNavbar()}
+
+      <main class="container">
+
+        <section class="result-card">
+
+          <div class="result-icon">
+            ${
+              percent >= 60
+                ? "🏆"
+                : "📖"
+            }
+          </div>
+
+          <h1>
+            Ergebnis
+          </h1>
+
+          <div class="result-score">
+            ${quiz.score} / ${total}
+          </div>
+
+          <p>
+            ${percent}% richtig
+          </p>
+
+          ${
+            percent >= 60
+              ? `<p>⭐ +20 XP</p>`
+              : `<p>Weiter lernen und noch einmal versuchen.</p>`
           }
-        });
-      });
+
+          <button
+            class="primary-btn"
+            onclick="DeutschConnect.goQuiz()"
+          >
+            Noch einmal
+          </button>
+
+        </section>
+
+      </main>
+
+      ${renderFooter()}
+    `;
   }
 
   // ----------------------------------------------------------
-  // COMMUNAUTÉ
+  // FOOTER
   // ----------------------------------------------------------
 
-  function showCommunity() {
-    const main = getMainContainer();
+  function renderFooter() {
 
-    main.innerHTML = `
-      <section class="empty-page">
+    return `
 
-        <span class="big-icon">👥</span>
+      <footer class="footer">
 
-        <h1>Gemeinsam lernen</h1>
+        <strong>
+          DeutschConnect 🇩🇪
+        </strong>
 
         <p>
-          Die Community kommt in einer späteren Version.
+          Français 🇫🇷 · Deutsch 🇩🇪
         </p>
 
         <p>
-          Bald kannst du Freunde hinzufügen,
-          Nachrichten schreiben und XP vergleichen.
+          A1 → A2 → B1 → B2 → C1 → C2
         </p>
 
-        <button
-          class="primary-btn"
-          id="communityHome"
-        >
-          ← Accueil
-        </button>
+        <small>
+          Deutsch lernen. Jeden Tag.
+        </small>
 
-      </section>
+      </footer>
+
     `;
-
-    document
-      .getElementById("communityHome")
-      ?.addEventListener("click", showHome);
   }
 
   // ----------------------------------------------------------
-  // PROFIL
+  // ROUTEUR
   // ----------------------------------------------------------
 
-  function showProfile() {
-    const stats = getStoredStats();
+  function router() {
 
-    const main = getMainContainer();
+    const hash =
+      window.location.hash
+        .replace("#", "")
+        .trim();
 
-    main.innerHTML = `
-      <section class="profile-page">
 
-        <button class="back-button" id="profileHome">
-          ← Accueil
-        </button>
+    if (hash === "learn") {
 
-        <div class="profile-header">
+      renderLearn();
 
-          <div class="avatar">
-            👤
-          </div>
-
-          <h1>DeutschConnect Lernender</h1>
-
-          <p>🇩🇪 A1</p>
-
-        </div>
-
-        <div class="stats-grid">
-
-          <div class="stat-card">
-            <span>⭐</span>
-            <strong>${stats.xp}</strong>
-            <small>XP</small>
-          </div>
-
-          <div class="stat-card">
-            <span>🔥</span>
-            <strong>${stats.streak}</strong>
-            <small>Série</small>
-          </div>
-
-          <div class="stat-card">
-            <span>📝</span>
-            <strong>${stats.tests}</strong>
-            <small>Tests</small>
-          </div>
-
-          <div class="stat-card">
-            <span>📚</span>
-            <strong>${stats.lessons}</strong>
-            <small>Leçons</small>
-          </div>
-
-        </div>
-
-      </section>
-    `;
-
-    document
-      .getElementById("profileHome")
-      ?.addEventListener("click", showHome);
-  }
-
-  // ----------------------------------------------------------
-  // NIVEAUX PAS ENCORE DISPONIBLES
-  // ----------------------------------------------------------
-
-  function showComingSoon(level) {
-    const main = getMainContainer();
-
-    main.innerHTML = `
-      <section class="empty-page">
-
-        <span class="big-icon">🔒</span>
-
-        <h1>Niveau ${level}</h1>
-
-        <p>
-          Dieser Bereich kommt bald.
-        </p>
-
-        <p>
-          Pour le moment, DeutschConnect commence avec A1.
-        </p>
-
-        <button
-          class="primary-btn"
-          id="backA1"
-        >
-          🇩🇪 Apprendre A1
-        </button>
-
-      </section>
-    `;
-
-    document
-      .getElementById("backA1")
-      ?.addEventListener("click", showLearn);
-  }
-
-  // ----------------------------------------------------------
-  // ERREUR
-  // ----------------------------------------------------------
-
-  function showError(message) {
-    const main = getMainContainer();
-
-    main.innerHTML = `
-      <section class="empty-page">
-
-        <span class="big-icon">⚠️</span>
-
-        <h1>Fehler</h1>
-
-        <p>${escapeHTML(message)}</p>
-
-        <button
-          class="primary-btn"
-          id="errorHome"
-        >
-          ← Accueil
-        </button>
-
-      </section>
-    `;
-
-    document
-      .getElementById("errorHome")
-      ?.addEventListener("click", showHome);
-  }
-
-  // ----------------------------------------------------------
-  // SAUVEGARDE LOCALE
-  // ----------------------------------------------------------
-
-  function getStoredStats() {
-    try {
-      const saved = localStorage.getItem(
-        "deutschconnect_stats"
-      );
-
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (error) {
-      console.warn("LocalStorage nicht verfügbar.");
+      return;
     }
 
-    return {
-      xp: 0,
-      streak: 0,
-      tests: 0,
-      lessons: 0,
-      completedLessons: []
-    };
+
+    if (hash === "a1") {
+
+      renderA1();
+
+      return;
+    }
+
+
+    if (hash === "quiz") {
+
+      renderQuizStart();
+
+      return;
+    }
+
+
+    if (hash.startsWith("lesson/")) {
+
+      const id =
+        hash.split("/")[1];
+
+      renderLesson(id);
+
+      return;
+    }
+
+
+    renderHome();
   }
 
-  function saveStats(stats) {
-    try {
-      localStorage.setItem(
-        "deutschconnect_stats",
-        JSON.stringify(stats)
-      );
-    } catch (error) {
-      console.warn("Speichern nicht möglich.");
-    }
-  }
-
-  function saveTestResult(lessonId, score, total) {
-    const stats = getStoredStats();
-
-    stats.tests++;
-
-    stats.xp += score * 10;
-
-    if (!stats.completedLessons.includes(lessonId)) {
-      stats.completedLessons.push(lessonId);
-      stats.lessons++;
-    }
-
-    saveStats(stats);
-  }
 
   // ----------------------------------------------------------
-  // PROGRESSION
+  // EXPOSER LES FONCTIONS
   // ----------------------------------------------------------
 
-  function updateProgressDisplay() {
-    const stats = getStoredStats();
+  window.DeutschConnect = {
 
-    const lessons =
-      typeof getA1Lessons === "function"
-        ? getA1Lessons()
-        : typeof A1_LESSONS !== "undefined"
-        ? A1_LESSONS
-        : [];
+    goHome: goHome,
 
-    const total = lessons.length;
+    goLearn: goLearn,
 
-    const completed = stats.completedLessons
-      ? stats.completedLessons.length
-      : 0;
+    goA1: goA1,
 
-    const percentage =
-      total > 0
-        ? Math.round((completed / total) * 100)
-        : 0;
+    goLesson: goLesson,
 
-    const progress = document.getElementById("homeProgress");
+    goQuiz: goQuiz,
 
-    if (progress) {
-      progress.textContent = percentage + "%";
-    }
+    startLessonQuiz: startLessonQuiz,
 
-    const xp = document.getElementById("homeXP");
+    answerQuestion: answerQuestion,
 
-    if (xp) {
-      xp.textContent = stats.xp;
-    }
+    startRandomQuiz: startRandomQuiz,
 
-    const streak = document.getElementById("homeStreak");
+    answerGeneral: answerGeneral
 
-    if (streak) {
-      streak.textContent = stats.streak;
-    }
-  }
+  };
+
 
   // ----------------------------------------------------------
-  // FORMATAGE DU TEXTE
+  // DÉMARRAGE
   // ----------------------------------------------------------
 
-  function formatText(text) {
-    if (!text) {
-      return "";
-    }
+  window.addEventListener(
+    "hashchange",
+    router
+  );
 
-    return escapeHTML(text)
-      .trim()
-      .split(/\n\s*\n/)
-      .map(function (paragraph) {
-        return `<p>${paragraph.replace(/\n/g, "<br>")}</p>`;
-      })
-      .join("");
-  }
-
-  // ----------------------------------------------------------
-  // PROTECTION HTML
-  // ----------------------------------------------------------
-
-  function escapeHTML(value) {
-    if (value === undefined || value === null) {
-      return "";
-    }
-
-    return String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
+  document.addEventListener(
+    "DOMContentLoaded",
+    router
+  );
 
 })();
