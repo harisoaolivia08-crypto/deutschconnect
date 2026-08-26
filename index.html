@@ -2,7 +2,6 @@
 <html lang="fr">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -15,13 +14,20 @@
     content="#111827"
   >
 
+  <meta
+    name="description"
+    content="DeutschConnect - Apprendre l'allemand de A1 à C2"
+  >
+
   <title>DeutschConnect 🇩🇪</title>
 
+  <!-- PWA -->
   <link
     rel="manifest"
     href="manifest.json"
   >
 
+  <!-- CSS -->
   <link
     rel="stylesheet"
     href="style.css"
@@ -32,23 +38,25 @@
 
 <body>
 
-  <!--
-    APP
-    Tout le contenu du site sera affiché ici
-    par app.js
-  -->
+  <!-- ======================================================
+       DEUTSCHCONNECT
+       Le contenu du site sera créé par app.js
+       ====================================================== -->
 
   <div id="app"></div>
 
 
-  <!--
-    IMPORTANT :
-    data.js doit être chargé AVANT app.js
-  -->
+  <!-- ======================================================
+       JAVASCRIPT
+       
+       IMPORTANT :
+       data.js doit être chargé AVANT app.js
+       ====================================================== -->
 
   <script src="data.js"></script>
 
   <script src="app.js"></script>
+
 
 </body>
 
