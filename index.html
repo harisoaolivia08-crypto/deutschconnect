@@ -1,39 +1,197 @@
 <!DOCTYPE html>
-<html lang="fr">
-
+<html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HaryFi – Deutsch lernen</title>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#111827"
-  >
-
-  <title>DeutschConnect 🇩🇪</title>
-
-  <link
-    rel="manifest"
-    href="manifest.json"
-  >
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <div id="app"></div>
+  <!-- =====================================================
+       ÉCRAN 1 : PAGE D'ENTRÉE
+  ====================================================== -->
+  <section id="screen-home" class="screen home-screen">
 
-  <script src="data.js"></script>
+    <canvas id="wordCanvas"></canvas>
+
+    <div class="home-content">
+
+      <div class="logo">
+        <div class="logo-box">HF</div>
+        <div>
+          <strong>HARY<span>FI</span></strong>
+          <small>SPRACHE • LERNEN • ZUKUNFT</small>
+        </div>
+      </div>
+
+      <div class="welcome-badge">
+        🇩🇪 HARYFI
+      </div>
+
+      <h1>
+        Lass uns<br>
+        <span>Deutsch lernen</span> ✈️
+      </h1>
+
+      <p class="home-description">
+        Lernen. Sprechen. Verstehen.
+      </p>
+
+      <button id="startButton" class="main-button">
+        JETZT STARTEN
+        <span>✈️</span>
+      </button>
+
+    </div>
+
+    <div class="home-footer">
+      <div>
+        <strong>A1 – C2</strong>
+        <small>SPRACHNIVEAUS</small>
+      </div>
+
+      <div>
+        <strong>50+</strong>
+        <small>LEKTIONEN</small>
+      </div>
+
+      <div>
+        <strong>100%</strong>
+        <small>INTERAKTIV</small>
+      </div>
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       ÉCRAN 2 : CHOIX DU NIVEAU
+  ====================================================== -->
+  <section id="screen-levels" class="screen levels-screen hidden">
+
+    <div class="levels-header">
+
+      <button class="back-button" data-back="home">
+        ← ZURÜCK
+      </button>
+
+      <div class="mini-logo">HARYFI</div>
+
+    </div>
+
+    <div class="levels-content">
+
+      <div class="section-badge">
+        DEUTSCH LERNEN
+      </div>
+
+      <h2>Wähle dein Niveau</h2>
+
+      <p>
+        Welches Niveau möchtest du lernen?
+      </p>
+
+      <div class="level-carousel">
+
+        <button class="level-card" data-level="A1">
+          <span class="level-number">01</span>
+          <strong>A1</strong>
+          <small>ANFÄNGER</small>
+        </button>
+
+        <button class="level-card" data-level="A2">
+          <span class="level-number">02</span>
+          <strong>A2</strong>
+          <small>GRUNDLAGEN</small>
+        </button>
+
+        <button class="level-card" data-level="B1">
+          <span class="level-number">03</span>
+          <strong>B1</strong>
+          <small>MITTELSTUFE</small>
+        </button>
+
+        <button class="level-card" data-level="B2">
+          <span class="level-number">04</span>
+          <strong>B2</strong>
+          <small>FORTGESCHRITTEN</small>
+        </button>
+
+        <button class="level-card" data-level="C1">
+          <span class="level-number">05</span>
+          <strong>C1</strong>
+          <small>FORTGESCHRITTEN+</small>
+        </button>
+
+        <button class="level-card" data-level="C2">
+          <span class="level-number">06</span>
+          <strong>C2</strong>
+          <small>MEISTERNIVEAU</small>
+        </button>
+
+      </div>
+
+      <div class="carousel-hint">
+        ← WISCHEN → 
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       ÉCRAN 3 : A1 INHALT
+  ====================================================== -->
+  <section id="screen-a1" class="screen lesson-screen hidden">
+
+    <div class="lesson-topbar">
+
+      <button class="back-button" data-back="levels">
+        ← ZURÜCK
+      </button>
+
+      <div class="lesson-logo">
+        HARYFI
+      </div>
+
+      <div class="level-label">
+        🇩🇪 A1
+      </div>
+
+    </div>
+
+
+    <main class="lesson-content">
+
+      <div class="lesson-title-badge">
+        🇩🇪 A1
+      </div>
+
+      <h2>A1 – Lektionen</h2>
+
+      <p class="lesson-subtitle">
+        Wähle eine Lektion und beginne zu lernen.
+      </p>
+
+
+      <div id="lessonList" class="lesson-list"></div>
+
+    </main>
+
+  </section>
+
+
+  <!-- =====================================================
+       EXPLOSION EFFECT
+  ====================================================== -->
+  <div id="explosion"></div>
+
+
   <script src="app.js"></script>
 
 </body>
-
 </html>
